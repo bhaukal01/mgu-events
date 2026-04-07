@@ -7,11 +7,57 @@ import ImageKitUpload from "./ImageKitUpload.jsx";
 
 const discordPattern = /^(?=.{2,32}$)(?!.*\s).+$/;
 const mcIgnPattern = /^[A-Za-z0-9_]{3,16}$/;
+const supportedFieldTypes = new Set([
+  "text",
+  "long_text",
+  "discord",
+  "mc_ign",
+  "image_upload",
+  "dropdown",
+  "selector",
+]);
+const selectableFieldTypes = new Set(["dropdown", "selector"]);
 
-const buildDefaultValues = (form) => {
+const normalizeFormFields = (form) => {
+  const sourceFields = Array.isArray(form?.fields) ? form.fields : [];
+  const usedNames = new Set();
+
+  return sourceFields
+    .filter((field) => field && typeof field === "object")
+    .map((field) => {
+      const name = String(field.name || "").trim();
+      const type = supportedFieldTypes.has(field.type) ? field.type : "text";
+      const label = String(field.label || name || "Field").trim();
+
+      if (!name || usedNames.has(name)) {
+        return null;
+      }
+
+      usedNames.add(name);
+
+      const normalizedField = {
+        name,
+        label: label || name,
+        type,
+        placeholder: String(field.placeholder || "").trim(),
+        required: Boolean(field.required),
+      };
+
+      if (selectableFieldTypes.has(type)) {
+        normalizedField.options = Array.isArray(field.options)
+          ? field.options.map((option) => String(option).trim()).filter(Boolean)
+          : [];
+      }
+
+      return normalizedField;
+    })
+    .filter(Boolean);
+};
+
+const buildDefaultValues = (fields) => {
   const values = {};
 
-  for (const field of form.fields || []) {
+  for (const field of fields) {
     values[field.name] = "";
   }
 
@@ -20,12 +66,12 @@ const buildDefaultValues = (form) => {
   return values;
 };
 
-const buildValidationSchema = (form) => {
+const buildValidationSchema = (fields) => {
   const shape = {
     __website: z.string().max(0).optional().default(""),
   };
 
-  for (const field of form.fields || []) {
+  for (const field of fields) {
     let schema = z.string();
     const fieldOptions = Array.isArray(field.options)
       ? field.options.map((option) => String(option).trim()).filter(Boolean)
@@ -49,7 +95,7 @@ const buildValidationSchema = (form) => {
       schema = schema.url(`${field.label} must be a valid uploaded URL.`);
     }
 
-    if (field.type === "dropdown" || field.type === "selector") {
+    if (selectableFieldTypes.has(field.type)) {
       schema = schema.refine(
         (value) => !value || fieldOptions.includes(value),
         `${field.label} must be one of the available options.`,
@@ -77,8 +123,22 @@ const getFormPurposeLeadText = (form) => {
 };
 
 const FormEngine = ({ eventSlug, form }) => {
-  const defaultValues = useMemo(() => buildDefaultValues(form), [form]);
-  const validationSchema = useMemo(() => buildValidationSchema(form), [form]);
+  const normalizedFormId = useMemo(
+    () =>
+      String(form?.id || "")
+        .trim()
+        .toLowerCase(),
+    [form],
+  );
+  const normalizedFields = useMemo(() => normalizeFormFields(form), [form]);
+  const defaultValues = useMemo(
+    () => buildDefaultValues(normalizedFields),
+    [normalizedFields],
+  );
+  const validationSchema = useMemo(
+    () => buildValidationSchema(normalizedFields),
+    [normalizedFields],
+  );
 
   const [submitError, setSubmitError] = useState("");
   const [submitSuccess, setSubmitSuccess] = useState("");
@@ -105,6 +165,11 @@ const FormEngine = ({ eventSlug, form }) => {
       setSubmitError("");
       setSubmitSuccess("");
 
+      if (!normalizedFormId) {
+        setSubmitError("This form is misconfigured. Please contact an admin.");
+        return;
+      }
+
       if (values.__website) {
         setSubmitError("Submission blocked.");
         return;
@@ -113,7 +178,7 @@ const FormEngine = ({ eventSlug, form }) => {
       const { __website, ...payloadValues } = values;
 
       await api.post(`/submissions/${eventSlug}`, {
-        formId: form.id,
+        formId: normalizedFormId,
         values: payloadValues,
       });
 
@@ -137,9 +202,9 @@ const FormEngine = ({ eventSlug, form }) => {
   return (
     <section className="panel-voxel rounded-2xl border border-emerald-400/25 bg-panel/85 p-5 shadow-neon-cube sm:p-6">
       <h3 className="text-rune-gradient text-2xl font-black uppercase">
-        {form.title}
+        {form?.title || "Registration Form"}
       </h3>
-      {form.description ? (
+      {form?.description ? (
         <p className="mt-1 text-sm text-slate-300">{form.description}</p>
       ) : null}
 
@@ -159,7 +224,7 @@ const FormEngine = ({ eventSlug, form }) => {
           {...register("__website")}
         />
 
-        {(form.fields || []).map((field) => {
+        {normalizedFields.map((field) => {
           const fieldError = errors[field.name]?.message;
           const fieldOptions = Array.isArray(field.options)
             ? field.options
@@ -200,8 +265,8 @@ const FormEngine = ({ eventSlug, form }) => {
                 <ImageKitUpload
                   label={field.label}
                   eventSlug={eventSlug}
-                  formId={form.id}
-                  folder={`/events-mgu-one/${eventSlug}/${form.id}`}
+                  formId={normalizedFormId}
+                  folder={`/events-mgu-one/${eventSlug}/${normalizedFormId}`}
                   value={imageValue}
                   onChange={(url) =>
                     setValue(field.name, url, {
@@ -321,7 +386,7 @@ const FormEngine = ({ eventSlug, form }) => {
           disabled={isSubmitting}
           className="btn-prism inline-flex rounded-xl px-4 py-2 text-sm font-bold uppercase tracking-wider disabled:cursor-not-allowed disabled:opacity-60"
         >
-          {isSubmitting ? "Submitting..." : form.submitLabel || "Submit"}
+          {isSubmitting ? "Submitting..." : form?.submitLabel || "Submit"}
         </button>
       </form>
     </section>
