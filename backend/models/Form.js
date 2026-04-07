@@ -47,7 +47,7 @@ const formFieldSchema = new Schema(
         },
         options: {
             type: [String],
-            default: [],
+            default: undefined,
         },
     },
     { _id: false },
@@ -111,20 +111,26 @@ formSchema.pre("validate", function normalizeForm(next) {
     if (Array.isArray(this.fields)) {
         this.fields = this.fields.map((field) => {
             const normalizedType = String(field.type || "").trim();
+            const normalizedName = String(field.name || "").trim().toLowerCase();
+            const normalizedLabel = String(field.label || "").trim();
             const options = Array.isArray(field.options)
                 ? field.options
                     .map((option) => String(option || "").trim())
                     .filter(Boolean)
                 : [];
-
-            return {
-                ...field,
-                name: String(field.name || "").trim().toLowerCase(),
-                options:
-                    normalizedType === "dropdown" || normalizedType === "selector"
-                        ? options
-                        : [],
+            const normalizedField = {
+                name: normalizedName,
+                label: normalizedLabel,
+                type: normalizedType,
+                placeholder: String(field.placeholder || ""),
+                required: Boolean(field.required),
             };
+
+            if (normalizedType === "dropdown" || normalizedType === "selector") {
+                normalizedField.options = options;
+            }
+
+            return normalizedField;
         });
     }
 

@@ -326,18 +326,23 @@ const validateEventPayload = async (payload, options = {}) => {
 
 const normalizeFormField = (field = {}) => {
     const normalizedType = fieldTypeSet.has(field.type) ? field.type : "text";
-
-    return {
+    const normalizedField = {
         name: normalizeText(field.name, 64).toLowerCase(),
         label: normalizeText(field.label, 160),
         type: normalizedType,
         placeholder: normalizeText(field.placeholder, 240),
         required: Boolean(field.required),
-        options:
-            normalizedType === "dropdown" || normalizedType === "selector"
-                ? normalizeStringList(field.options, 120, MAX_FORM_OPTIONS)
-                : [],
     };
+
+    if (normalizedType === "dropdown" || normalizedType === "selector") {
+        normalizedField.options = normalizeStringList(
+            field.options,
+            120,
+            MAX_FORM_OPTIONS,
+        );
+    }
+
+    return normalizedField;
 };
 
 const normalizeFormPayload = (payload = {}) => ({
@@ -525,6 +530,26 @@ const csvEscape = (value) => {
     }
 
     return text;
+};
+
+const getCsvHeaderLabel = (field, index) => {
+    const label = String(field?.label || "").trim();
+
+    if (label) {
+        return label;
+    }
+
+    const fieldName = String(field?.name || "").trim();
+
+    if (!fieldName) {
+        return `Field ${index + 1}`;
+    }
+
+    return fieldName
+        .replace(/[_-]+/g, " ")
+        .replace(/\s+/g, " ")
+        .trim()
+        .replace(/\b\w/g, (character) => character.toUpperCase());
 };
 
 router.get("/bootstrap-status", async (req, res, next) => {
@@ -950,38 +975,21 @@ router.get("/forms/:id/submissions.csv", requireAuth, async (req, res, next) => 
             .sort({ createdAt: -1 })
             .lean();
 
-        const eventIds = [
-            ...new Set(submissions.map((submission) => String(submission.eventId || "")).filter(Boolean)),
-        ];
-
-        const events =
-            eventIds.length > 0
-                ? await Event.find({ _id: { $in: eventIds } }).select("_id slug title").lean()
-                : [];
-
-        const eventMap = new Map(events.map((event) => [String(event._id), event]));
-
-        const headers = [
-            "submissionId",
-            "eventSlug",
-            "eventTitle",
-            "submittedAt",
-            "status",
-            ...(form.fields || []).map((field) => field.name),
-        ];
+        const formFields = Array.isArray(form.fields) ? form.fields : [];
+        const headers = formFields.map((field, index) => getCsvHeaderLabel(field, index));
 
         const rows = submissions.map((submission) => {
-            const event = eventMap.get(String(submission.eventId || ""));
-            const values = submission.data || {};
+            const values = submission?.data && typeof submission.data === "object" ? submission.data : {};
 
-            return [
-                submission._id,
-                event?.slug || "",
-                event?.title || "",
-                submission.createdAt ? new Date(submission.createdAt).toISOString() : "",
-                submission.status || "",
-                ...(form.fields || []).map((field) => values[field.name] || ""),
-            ];
+            return formFields.map((field) => {
+                const fieldName = String(field?.name || "").trim();
+
+                if (!fieldName) {
+                    return "";
+                }
+
+                return values[fieldName] || "";
+            });
         });
 
         const csv = [headers, ...rows]

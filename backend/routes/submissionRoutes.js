@@ -15,6 +15,7 @@ const isUrl = (value) => /^https?:\/\/.+/i.test(value);
 const MAX_SHORT_TEXT = 320;
 const MAX_LONG_TEXT = 8000;
 const MAX_VALUES_PER_SUBMISSION = 150;
+const selectableFieldTypes = new Set(["dropdown", "selector"]);
 
 const submissionLimiter = rateLimit({
     windowMs: 15 * 60 * 1000,
@@ -38,6 +39,59 @@ const extractLinkedFormIds = (layout = []) =>
                 .filter(Boolean),
         ),
     ];
+
+const sanitizeFormField = (field) => {
+    if (!field || typeof field !== "object") {
+        return null;
+    }
+
+    const name = String(field.name || "").trim();
+    const label = String(field.label || "").trim();
+    const type = String(field.type || "").trim();
+
+    if (!name || !label || !type) {
+        return null;
+    }
+
+    const normalizedField = {
+        name,
+        label,
+        type,
+        placeholder: String(field.placeholder || "").trim(),
+        required: Boolean(field.required),
+    };
+
+    if (selectableFieldTypes.has(type)) {
+        normalizedField.options = Array.isArray(field.options)
+            ? field.options.map((option) => String(option || "").trim()).filter(Boolean)
+            : [];
+    }
+
+    return normalizedField;
+};
+
+const sanitizeForm = (form) => {
+    if (!form || typeof form !== "object") {
+        return null;
+    }
+
+    const id = String(form.id || "").toLowerCase().trim();
+
+    if (!id) {
+        return null;
+    }
+
+    return {
+        id,
+        title: String(form.title || "").trim(),
+        description: String(form.description || "").trim(),
+        submitLabel: String(form.submitLabel || "Submit").trim() || "Submit",
+        formPurpose: String(form.formPurpose || "REGISTRATION").trim() || "REGISTRATION",
+        fields: Array.isArray(form.fields)
+            ? form.fields.map(sanitizeFormField).filter(Boolean)
+            : [],
+    };
+};
 
 const getTrustedImagekitEndpoint = () =>
     String(process.env.IMAGEKIT_URL_ENDPOINT || "")
@@ -126,12 +180,13 @@ router.get("/admin/:eventId", requireAuth, async (req, res, next) => {
             linkedFormIds.length > 0
                 ? await Form.find({ id: { $in: linkedFormIds } }).lean()
                 : [];
-        const forms =
+        const sourceForms =
             standaloneForms.length > 0
                 ? standaloneForms
                 : Array.isArray(event.forms)
                     ? event.forms
                     : [];
+        const forms = sourceForms.map(sanitizeForm).filter(Boolean);
 
         const submissions = await Submission.find({ eventId: event._id })
             .sort({ createdAt: -1 })
@@ -184,9 +239,9 @@ router.post("/:eventSlug", submissionLimiter, async (req, res, next) => {
             return res.status(404).json({ message: "Form not linked to this event." });
         }
 
-        const standaloneForm = await Form.findOne({ id: formId }).lean();
+        const standaloneForm = sanitizeForm(await Form.findOne({ id: formId }).lean());
         const legacyForm = Array.isArray(event.forms)
-            ? event.forms.find((candidate) => candidate.id === formId)
+            ? sanitizeForm(event.forms.find((candidate) => candidate.id === formId))
             : null;
         const form = standaloneForm || legacyForm;
 

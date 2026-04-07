@@ -3,6 +3,7 @@ import Event from "../models/Event.js";
 import Form from "../models/Form.js";
 
 const router = express.Router();
+const selectableFieldTypes = new Set(["dropdown", "selector"]);
 
 const extractCardData = (layout = []) => {
     const heroBlock =
@@ -25,6 +26,59 @@ const extractLinkedFormIds = (layout = []) =>
                 .filter(Boolean),
         ),
     ];
+
+const sanitizeFormField = (field) => {
+    if (!field || typeof field !== "object") {
+        return null;
+    }
+
+    const name = String(field.name || "").trim();
+    const label = String(field.label || "").trim();
+    const type = String(field.type || "").trim();
+
+    if (!name || !label || !type) {
+        return null;
+    }
+
+    const normalizedField = {
+        name,
+        label,
+        type,
+        placeholder: String(field.placeholder || "").trim(),
+        required: Boolean(field.required),
+    };
+
+    if (selectableFieldTypes.has(type)) {
+        normalizedField.options = Array.isArray(field.options)
+            ? field.options.map((option) => String(option || "").trim()).filter(Boolean)
+            : [];
+    }
+
+    return normalizedField;
+};
+
+const sanitizeForm = (form) => {
+    if (!form || typeof form !== "object") {
+        return null;
+    }
+
+    const id = String(form.id || "").toLowerCase().trim();
+
+    if (!id) {
+        return null;
+    }
+
+    return {
+        id,
+        title: String(form.title || "").trim(),
+        description: String(form.description || "").trim(),
+        submitLabel: String(form.submitLabel || "Submit").trim() || "Submit",
+        formPurpose: String(form.formPurpose || "REGISTRATION").trim() || "REGISTRATION",
+        fields: Array.isArray(form.fields)
+            ? form.fields.map(sanitizeFormField).filter(Boolean)
+            : [],
+    };
+};
 
 router.get("/", async (req, res, next) => {
     try {
@@ -75,12 +129,13 @@ router.get("/:slug", async (req, res, next) => {
                 ? await Form.find({ id: { $in: linkedFormIds } }).lean()
                 : [];
 
-        const forms =
+        const sourceForms =
             standaloneForms.length > 0
                 ? standaloneForms
                 : Array.isArray(event.forms)
                     ? event.forms
                     : [];
+        const forms = sourceForms.map(sanitizeForm).filter(Boolean);
 
         return res.json({
             ...event,
