@@ -95,17 +95,20 @@ const buildValidationSchema = (fields) => {
       schema = schema.url(`${field.label} must be a valid uploaded URL.`);
     }
 
-    if (selectableFieldTypes.has(field.type)) {
-      schema = schema.refine(
-        (value) => !value || fieldOptions.includes(value),
-        `${field.label} must be one of the available options.`,
-      );
-    }
-
     if (!field.required) {
       schema = schema.optional().or(z.literal(""));
     } else {
-      schema = schema.min(1, `${field.label} is required.`);
+      schema = schema.refine(
+        (value) => String(value ?? "").trim().length > 0,
+        `${field.label} is required.`,
+      );
+    }
+
+    if (selectableFieldTypes.has(field.type)) {
+      schema = schema.refine((value) => {
+        const normalizedValue = String(value || "").trim();
+        return !normalizedValue || fieldOptions.includes(normalizedValue);
+      }, `${field.label} must be one of the available options.`);
     }
 
     shape[field.name] = schema;

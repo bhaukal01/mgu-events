@@ -163,6 +163,25 @@ const FormBuilderPage = () => {
     }));
   };
 
+  const moveField = (fieldIndex, direction) => {
+    setDraft((previous) => {
+      const nextIndex = fieldIndex + direction;
+
+      if (nextIndex < 0 || nextIndex >= previous.fields.length) {
+        return previous;
+      }
+
+      const nextFields = [...previous.fields];
+      const [movedField] = nextFields.splice(fieldIndex, 1);
+      nextFields.splice(nextIndex, 0, movedField);
+
+      return {
+        ...previous,
+        fields: nextFields,
+      };
+    });
+  };
+
   const buildPayload = () => ({
     id: slugify(draft.id),
     title: draft.title,
@@ -562,13 +581,31 @@ const FormBuilderPage = () => {
                   </div>
                 ) : null}
 
-                <button
-                  type="button"
-                  onClick={() => removeField(fieldIndex)}
-                  className="mt-2 rounded border border-red-500/40 bg-red-500/10 px-2 py-1 text-[11px] font-semibold uppercase tracking-wider text-red-200"
-                >
-                  Remove Field
-                </button>
+                <div className="mt-2 flex flex-wrap gap-2">
+                  <button
+                    type="button"
+                    onClick={() => moveField(fieldIndex, -1)}
+                    disabled={fieldIndex === 0}
+                    className="rounded border border-emerald-400/20 bg-slate-900 px-2 py-1 text-[11px] font-semibold uppercase tracking-wider text-slate-300 disabled:opacity-45"
+                  >
+                    Move Up
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => moveField(fieldIndex, 1)}
+                    disabled={fieldIndex === draft.fields.length - 1}
+                    className="rounded border border-emerald-400/20 bg-slate-900 px-2 py-1 text-[11px] font-semibold uppercase tracking-wider text-slate-300 disabled:opacity-45"
+                  >
+                    Move Down
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => removeField(fieldIndex)}
+                    className="rounded border border-red-500/40 bg-red-500/10 px-2 py-1 text-[11px] font-semibold uppercase tracking-wider text-red-200"
+                  >
+                    Remove Field
+                  </button>
+                </div>
               </div>
             ))}
 

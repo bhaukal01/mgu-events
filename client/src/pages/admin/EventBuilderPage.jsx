@@ -412,6 +412,25 @@ const EventBuilderPage = () => {
     }));
   };
 
+  const moveBlock = (index, direction) => {
+    setDraft((previous) => {
+      const nextIndex = index + direction;
+
+      if (nextIndex < 0 || nextIndex >= previous.layout.length) {
+        return previous;
+      }
+
+      const nextLayout = [...previous.layout];
+      const [movedBlock] = nextLayout.splice(index, 1);
+      nextLayout.splice(nextIndex, 0, movedBlock);
+
+      return {
+        ...previous,
+        layout: nextLayout,
+      };
+    });
+  };
+
   const createPayload = () => ({
     title: draft.title.trim(),
     slug: slugify(draft.slug || draft.title),
@@ -873,13 +892,31 @@ const EventBuilderPage = () => {
                       </select>
                     </div>
 
-                    <button
-                      type="button"
-                      onClick={() => removeBlock(index)}
-                      className="rounded border border-red-500/40 bg-red-500/10 px-2 py-1 text-[11px] font-semibold uppercase tracking-wider text-red-200"
-                    >
-                      Remove
-                    </button>
+                    <div className="flex flex-wrap gap-2">
+                      <button
+                        type="button"
+                        onClick={() => moveBlock(index, -1)}
+                        disabled={index === 0}
+                        className="rounded border border-emerald-400/20 bg-slate-900 px-2 py-1 text-[11px] font-semibold uppercase tracking-wider text-slate-300 disabled:opacity-45"
+                      >
+                        Move Up
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => moveBlock(index, 1)}
+                        disabled={index === draft.layout.length - 1}
+                        className="rounded border border-emerald-400/20 bg-slate-900 px-2 py-1 text-[11px] font-semibold uppercase tracking-wider text-slate-300 disabled:opacity-45"
+                      >
+                        Move Down
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => removeBlock(index)}
+                        className="rounded border border-red-500/40 bg-red-500/10 px-2 py-1 text-[11px] font-semibold uppercase tracking-wider text-red-200"
+                      >
+                        Remove
+                      </button>
+                    </div>
                   </div>
 
                   {block.type === "HERO_EXPLOSION" ? (
