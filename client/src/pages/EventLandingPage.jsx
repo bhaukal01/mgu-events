@@ -66,7 +66,7 @@ const EventLandingPage = () => {
           <Skeleton
             variant="rectangular"
             height={180}
-            sx={{ mt: 2, borderRadius: 2 }}
+            sx={{ mt: 2, borderRadius: 0 }}
           />
         </Paper>
       </Container>
@@ -121,6 +121,7 @@ const EventLandingPage = () => {
           p: { xs: 2.5, sm: 4 },
           position: "relative",
           overflow: "hidden",
+          bgcolor: "#f5fafc",
         }}
       >
         <Box
@@ -132,7 +133,7 @@ const EventLandingPage = () => {
             right: -12,
             top: -20,
             width: 180,
-            opacity: 0.08,
+            opacity: 0.14,
           }}
         />
         <Stack spacing={1.5} sx={{ position: "relative" }}>

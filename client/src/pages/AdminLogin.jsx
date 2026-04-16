@@ -102,6 +102,7 @@ const AdminLogin = () => {
           width: "100%",
           position: "relative",
           overflow: "hidden",
+          bgcolor: "#f5fafc",
         }}
       >
         <Box
@@ -113,7 +114,7 @@ const AdminLogin = () => {
             right: -24,
             top: -20,
             width: 180,
-            opacity: 0.08,
+            opacity: 0.14,
           }}
         />
 

@@ -35,8 +35,8 @@ const AdminShell = ({ title, subtitle, actions, children }) => {
   };
 
   return (
-    <Container maxWidth="xl" sx={{ py: 3 }}>
-      <Paper sx={{ mb: 2, p: 3 }}>
+    <Container maxWidth="xl" sx={{ py: 4 }}>
+      <Paper sx={{ mb: 2, p: 3, bgcolor: "#edf3f9" }}>
         <Stack
           direction={{ xs: "column", lg: "row" }}
           spacing={2}
@@ -80,7 +80,7 @@ const AdminShell = ({ title, subtitle, actions, children }) => {
         </Stack>
       </Paper>
 
-      <Paper sx={{ mb: 3, p: 1.5 }}>
+      <Paper sx={{ mb: 3, p: 1.5, bgcolor: "#eef6ea" }}>
         <Stack direction="row" spacing={1} useFlexGap flexWrap="wrap">
           {navItems.map((item) => {
             const isActive = location.pathname === item.to;
@@ -93,6 +93,7 @@ const AdminShell = ({ title, subtitle, actions, children }) => {
                 variant={isActive ? "contained" : "outlined"}
                 color={isActive ? "secondary" : "primary"}
                 size="small"
+                sx={{ minWidth: 148 }}
               >
                 {item.label}
               </Button>

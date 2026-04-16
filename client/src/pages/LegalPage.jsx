@@ -45,7 +45,7 @@ const LegalPage = () => {
 
   return (
     <Container maxWidth="md" sx={{ py: 5 }}>
-      <Paper sx={{ p: { xs: 2.5, sm: 4 } }}>
+      <Paper sx={{ p: { xs: 2.5, sm: 4 }, bgcolor: "#f5fafc" }}>
         <Typography
           variant="overline"
           color="text.secondary"
@@ -74,7 +74,10 @@ const LegalPage = () => {
           <Paper
             id={section.id}
             key={section.id}
-            sx={{ p: { xs: 2, sm: 2.5 } }}
+            sx={{
+              p: { xs: 2, sm: 2.5 },
+              bgcolor: section.id === "acceptable-use" ? "#fef6ee" : "#fffdf6",
+            }}
           >
             <Typography variant="h5" color="primary.main">
               {section.title}

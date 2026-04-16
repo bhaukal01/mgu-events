@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Hanken+Grotesk:wght@400;500;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Sora:wght@400;500;600;700&display=swap");
 
 :root {
   color-scheme: light;
@@ -12,32 +12,36 @@ body,
 
 body {
   margin: 0;
-  background-color: #f3f1ea;
+  background-color: #d9d3c4;
 }
 
 .ik-upload-input {
   width: 100%;
-  padding: 8px;
-  border: 1px solid #d7d2c4;
-  border-radius: 8px;
-  background-color: #ffffff;
-  color: #1d2530;
+  padding: 9px 10px;
+  border: 2px solid #263445;
+  border-radius: 0;
+  background-color: #fffdf7;
+  color: #19212c;
+  box-shadow: 4px 4px 0 rgba(19, 25, 33, 0.18);
   font:
-    500 0.875rem "Hanken Grotesk",
+    500 0.875rem "Sora",
     "Segoe UI",
     sans-serif;
 }
 
 .ik-upload-input::file-selector-button {
-  border: 0;
-  border-radius: 8px;
-  padding: 6px 10px;
+  border: 2px solid #131921;
+  border-radius: 0;
+  padding: 6px 12px;
   margin-right: 8px;
-  background-color: #1f2937;
-  color: #f8fafc;
+  background-color: #263445;
+  color: #f3f8ff;
+  box-shadow: 3px 3px 0 rgba(19, 25, 33, 0.28);
   font:
-    600 0.75rem "Hanken Grotesk",
+    700 0.72rem "Chakra Petch",
     "Segoe UI",
     sans-serif;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
   cursor: pointer;
 }

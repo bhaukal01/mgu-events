@@ -678,7 +678,7 @@ const EventBuilderPage = () => {
                 <Skeleton
                   variant="rectangular"
                   height={96}
-                  sx={{ borderRadius: 2 }}
+                  sx={{ borderRadius: 0 }}
                 />
               ) : null}
 
@@ -1325,7 +1325,7 @@ const EventBuilderPage = () => {
                 <Skeleton
                   variant="rectangular"
                   height={96}
-                  sx={{ borderRadius: 2 }}
+                  sx={{ borderRadius: 0 }}
                 />
               ) : null}
 

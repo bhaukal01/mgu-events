@@ -300,7 +300,7 @@ const AdminManagementPage = () => {
           <Skeleton
             variant="rectangular"
             height={64}
-            sx={{ borderRadius: 2, mt: 2 }}
+            sx={{ borderRadius: 0, mt: 2 }}
           />
         ) : null}
 

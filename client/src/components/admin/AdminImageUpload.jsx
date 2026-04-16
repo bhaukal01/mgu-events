@@ -119,9 +119,9 @@ const AdminImageUpload = ({
       {value ? (
         <Box
           sx={{
-            border: "1px solid",
+            border: "2px solid",
             borderColor: "divider",
-            borderRadius: 1,
+            borderRadius: 0,
             overflow: "hidden",
           }}
         >

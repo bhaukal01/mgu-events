@@ -147,17 +147,41 @@ const EventDirectory = () => {
   }, [enrichedEvents, query]);
 
   return (
-    <Container maxWidth="xl" sx={{ py: 4 }}>
-      <Paper sx={{ p: { xs: 3, md: 4 }, mb: 4 }}>
+    <Container maxWidth="xl" sx={{ py: 5 }}>
+      <Paper
+        sx={{
+          p: { xs: 3, md: 4 },
+          mb: 4,
+          position: "relative",
+          overflow: "hidden",
+          "&::before": {
+            content: '""',
+            position: "absolute",
+            inset: 0,
+            pointerEvents: "none",
+            backgroundImage:
+              "linear-gradient(90deg, rgba(19, 25, 33, 0.06) 1px, transparent 1px), linear-gradient(rgba(19, 25, 33, 0.06) 1px, transparent 1px)",
+            backgroundSize: "18px 18px",
+          },
+        }}
+      >
         <Grid container spacing={3}>
           <Grid size={{ xs: 12, lg: 8 }}>
-            <Stack spacing={2.5}>
+            <Stack spacing={2.5} sx={{ position: "relative" }}>
               <Stack direction="row" spacing={2} alignItems="center">
                 <Box
                   component="img"
                   src="/logo.png"
                   alt="MGU.ONE"
-                  sx={{ width: 80, height: 80, objectFit: "contain" }}
+                  sx={{
+                    width: 80,
+                    height: 80,
+                    objectFit: "contain",
+                    border: "2px solid",
+                    borderColor: "primary.dark",
+                    bgcolor: "background.paper",
+                    p: 1,
+                  }}
                 />
                 <Box>
                   <Typography
@@ -185,8 +209,17 @@ const EventDirectory = () => {
                 Explore and join live Minecraft events hosted by MGU.ONE.
               </Typography>
 
+              <Stack direction="row" spacing={1} useFlexGap flexWrap="wrap">
+                <Chip label="Public Server Events" color="secondary" />
+                <Chip label="Hardcore + Casual" variant="outlined" />
+                <Chip label="Tournament Ready" variant="outlined" />
+              </Stack>
+
               <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
-                <Paper variant="outlined" sx={{ p: 2, minWidth: 180 }}>
+                <Paper
+                  variant="outlined"
+                  sx={{ p: 2, minWidth: 180, bgcolor: "#fff8ee" }}
+                >
                   <Typography variant="caption" color="text.secondary">
                     Active Event Count
                   </Typography>
@@ -194,7 +227,10 @@ const EventDirectory = () => {
                     {enrichedEvents.length}
                   </Typography>
                 </Paper>
-                <Paper variant="outlined" sx={{ p: 2, flex: 1 }}>
+                <Paper
+                  variant="outlined"
+                  sx={{ p: 2, flex: 1, bgcolor: "#f1fbef" }}
+                >
                   <Typography variant="caption" color="text.secondary">
                     Event Types
                   </Typography>
@@ -207,7 +243,10 @@ const EventDirectory = () => {
           </Grid>
 
           <Grid size={{ xs: 12, lg: 4 }}>
-            <Paper variant="outlined" sx={{ p: 2.5, height: "100%" }}>
+            <Paper
+              variant="outlined"
+              sx={{ p: 2.5, height: "100%", bgcolor: "#f5fafc" }}
+            >
               <Typography
                 variant="overline"
                 color="text.secondary"
@@ -227,7 +266,7 @@ const EventDirectory = () => {
                     startAdornment: (
                       <Search
                         size={16}
-                        style={{ marginRight: 8, color: "#6b7280" }}
+                        style={{ marginRight: 8, color: "#3b4a5f" }}
                       />
                     ),
                   },
@@ -265,7 +304,7 @@ const EventDirectory = () => {
                   <Skeleton
                     variant="rectangular"
                     height={168}
-                    sx={{ borderRadius: 2 }}
+                    sx={{ borderRadius: 0 }}
                   />
                   <Skeleton width="70%" sx={{ mt: 2 }} />
                   <Skeleton width="95%" />
@@ -303,7 +342,16 @@ const EventDirectory = () => {
                   key={event._id || event.slug}
                   size={{ xs: 12, sm: 6, lg: 4 }}
                 >
-                  <Card sx={{ height: "100%" }}>
+                  <Card
+                    sx={{
+                      height: "100%",
+                      transition: "transform 120ms ease, box-shadow 120ms ease",
+                      "&:hover": {
+                        transform: "translate(-2px, -2px)",
+                        boxShadow: "8px 8px 0 rgba(19, 25, 33, 0.26)",
+                      },
+                    }}
+                  >
                     <CardActionArea
                       component={Link}
                       to={`/${event.slug}`}
@@ -360,10 +408,10 @@ const EventDirectory = () => {
                           {dateRangeLabel(event)}
                         </Typography>
                         <Button
-                          variant="text"
+                          variant="outlined"
                           color="primary"
                           endIcon={<ArrowRight size={14} />}
-                          sx={{ mt: 1.5, px: 0 }}
+                          sx={{ mt: 1.5 }}
                         >
                           Join Realm Event
                         </Button>
@@ -377,9 +425,9 @@ const EventDirectory = () => {
                             top: 12,
                             width: 40,
                             height: 40,
-                            borderRadius: 1,
+                            borderRadius: 0,
                             overflow: "hidden",
-                            border: "1px solid",
+                            border: "2px solid",
                             borderColor: "divider",
                             bgcolor: "background.paper",
                           }}
@@ -407,67 +455,89 @@ const EventDirectory = () => {
   );
 };
 
+const legalLinks = [
+  { to: "/legal#terms", label: "Terms" },
+  { to: "/legal#privacy", label: "Privacy" },
+  { to: "/legal#cookies", label: "Cookies" },
+  { to: "/legal#acceptable-use", label: "Acceptable Use" },
+];
+
 const SiteFooter = () => {
   const year = new Date().getFullYear();
 
   return (
     <Box
       component="footer"
-      sx={{ mt: 6, borderTop: "1px solid", borderColor: "divider" }}
+      sx={{
+        mt: 6,
+        borderTop: "3px solid",
+        borderColor: "primary.main",
+        backgroundColor: "#e9e4d6",
+      }}
     >
-      <Container maxWidth="xl" sx={{ py: 3 }}>
-        <Stack spacing={1.5}>
-          <Stack
-            direction={{ xs: "column", md: "row" }}
-            justifyContent="space-between"
-            alignItems={{ xs: "flex-start", md: "center" }}
-            spacing={1}
-          >
-            <Typography variant="caption" color="text.secondary">
-              Copyright © {year} MGU.ONE. All rights reserved.
-            </Typography>
-            <Stack direction="row" spacing={1} useFlexGap flexWrap="wrap">
-              <Button
-                component={Link}
-                to="/legal#terms"
-                size="small"
-                color="inherit"
+      <Container maxWidth="xl" sx={{ py: { xs: 3, md: 4 } }}>
+        <Grid container spacing={2.5}>
+          <Grid size={{ xs: 12, md: 4 }}>
+            <Paper sx={{ p: 2.5, height: "100%", bgcolor: "#f2eddf" }}>
+              <Typography
+                variant="overline"
+                color="text.secondary"
+                sx={{ letterSpacing: 1.2 }}
               >
-                Terms
-              </Button>
-              <Button
-                component={Link}
-                to="/legal#privacy"
-                size="small"
-                color="inherit"
+                MGU.ONE Events
+              </Typography>
+              <Typography variant="h6" color="primary.main" sx={{ mt: 0.5 }}>
+                Server Event Board
+              </Typography>
+              <Typography
+                variant="caption"
+                color="text.secondary"
+                sx={{ mt: 1.5, display: "block" }}
               >
-                Privacy
-              </Button>
-              <Button
-                component={Link}
-                to="/legal#cookies"
-                size="small"
-                color="inherit"
-              >
-                Cookies
-              </Button>
-              <Button
-                component={Link}
-                to="/legal#acceptable-use"
-                size="small"
-                color="inherit"
-              >
-                Acceptable Use
-              </Button>
-            </Stack>
-          </Stack>
+                Copyright © {year} MGU.ONE. All rights reserved.
+              </Typography>
+            </Paper>
+          </Grid>
 
-          <Typography variant="caption" color="text.secondary">
-            MGU.ONE Events is an independent Minecraft community platform. Users
-            must comply with tournament rules, platform policies, and applicable
-            local regulations.
-          </Typography>
-        </Stack>
+          <Grid size={{ xs: 12, md: 8 }}>
+            <Paper sx={{ p: 2.5, height: "100%", bgcolor: "#f7f3e8" }}>
+              <Typography
+                variant="overline"
+                color="text.secondary"
+                sx={{ letterSpacing: 1.2 }}
+              >
+                Legal & Compliance
+              </Typography>
+
+              <Stack
+                direction="row"
+                spacing={1}
+                useFlexGap
+                flexWrap="wrap"
+                sx={{ mt: 1.5 }}
+              >
+                {legalLinks.map((link) => (
+                  <Button
+                    key={link.to}
+                    component={Link}
+                    to={link.to}
+                    variant="outlined"
+                    size="small"
+                    color="primary"
+                  >
+                    {link.label}
+                  </Button>
+                ))}
+              </Stack>
+
+              <Typography variant="body2" color="text.secondary" sx={{ mt: 2 }}>
+                MGU.ONE Events is an independent Minecraft community platform.
+                Users must comply with tournament rules, platform policies, and
+                applicable local regulations.
+              </Typography>
+            </Paper>
+          </Grid>
+        </Grid>
       </Container>
     </Box>
   );

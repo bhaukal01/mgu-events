@@ -402,7 +402,11 @@ const FormBuilderPage = () => {
 
             <Stack spacing={1.5} sx={{ mt: 2 }}>
               {loadingForms ? (
-                <Skeleton variant="rectangular" height={96} sx={{ borderRadius: 2 }} />
+                <Skeleton
+                  variant="rectangular"
+                  height={96}
+                  sx={{ borderRadius: 0 }}
+                />
               ) : null}
 
               {!loadingForms && forms.length === 0 ? (
@@ -431,7 +435,9 @@ const FormBuilderPage = () => {
                         }}
                       >
                         <Box>
-                          <Typography variant="subtitle2">{form.title}</Typography>
+                          <Typography variant="subtitle2">
+                            {form.title}
+                          </Typography>
                           <Typography variant="caption" sx={{ opacity: 0.9 }}>
                             {form.id}
                           </Typography>
@@ -466,7 +472,9 @@ const FormBuilderPage = () => {
               <Grid size={{ xs: 12, md: 6 }}>
                 <TextField
                   value={draft.title}
-                  onChange={(event) => updateDraft({ title: event.target.value })}
+                  onChange={(event) =>
+                    updateDraft({ title: event.target.value })
+                  }
                   label="Title"
                   fullWidth
                   size="small"
@@ -519,7 +527,11 @@ const FormBuilderPage = () => {
 
             <Stack spacing={1.5} sx={{ mt: 2 }}>
               {draft.fields.map((field, fieldIndex) => (
-                <Paper key={`${field.name}-${fieldIndex}`} variant="outlined" sx={{ p: 1.5 }}>
+                <Paper
+                  key={`${field.name}-${fieldIndex}`}
+                  variant="outlined"
+                  sx={{ p: 1.5 }}
+                >
                   <Grid container spacing={1.25}>
                     <Grid size={{ xs: 12, md: 6, lg: 4 }}>
                       <TextField
@@ -625,7 +637,13 @@ const FormBuilderPage = () => {
                     />
                   ) : null}
 
-                  <Stack direction="row" spacing={1} useFlexGap flexWrap="wrap" sx={{ mt: 1.25 }}>
+                  <Stack
+                    direction="row"
+                    spacing={1}
+                    useFlexGap
+                    flexWrap="wrap"
+                    sx={{ mt: 1.25 }}
+                  >
                     <Button
                       type="button"
                       onClick={() => moveField(fieldIndex, -1)}

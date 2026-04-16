@@ -232,7 +232,7 @@ const DynamicRenderer = ({ event }) => {
                     ? imageItems.map((item, imageIndex) => (
                         <Paper
                           key={`${item.url}-${imageIndex}`}
-                          sx={{ borderRadius: 2, overflow: "hidden" }}
+                          sx={{ borderRadius: 0, overflow: "hidden" }}
                         >
                           <Box
                             component="img"

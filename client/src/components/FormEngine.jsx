@@ -358,7 +358,7 @@ const FormEngine = ({ eventSlug, form }) => {
                       color={selectedValue === option ? "secondary" : "default"}
                       variant={selectedValue === option ? "filled" : "outlined"}
                       clickable
-                      sx={{ borderRadius: 1 }}
+                      sx={{ borderRadius: 0 }}
                     />
                   ))}
                 </Stack>
