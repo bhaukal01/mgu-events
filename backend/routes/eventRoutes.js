@@ -85,7 +85,7 @@ router.get("/", async (req, res, next) => {
         const events = await Event.find({
             $or: [{ status: "ACTIVE" }, { manualEventPublish: true }],
         })
-            .select("title slug status startsAt endsAt updatedAt layout serverLogoUrl")
+            .select("title slug status startsAt endsAt updatedAt layout serverLogoUrl cardStrapline")
             .sort({ updatedAt: -1 })
             .lean();
 
@@ -101,7 +101,7 @@ router.get("/", async (req, res, next) => {
                 updatedAt: event.updatedAt,
                 coverImage: cardData.coverImage,
                 cardLogo: event.serverLogoUrl || cardData.cardLogo,
-                strapline: cardData.strapline,
+                strapline: event.cardStrapline || cardData.strapline,
             };
         });
 

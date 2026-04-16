@@ -55,6 +55,11 @@ const eventSchema = new Schema(
             default: "",
             maxlength: 1200,
         },
+        cardStrapline: {
+            type: String,
+            default: "",
+            maxlength: 480,
+        },
         startsAt: {
             type: Date,
             default: null,
@@ -111,6 +116,7 @@ eventSchema.pre("validate", function normalizeEventFields(next) {
     }
 
     this.serverLogoUrl = String(this.serverLogoUrl || "").trim();
+    this.cardStrapline = String(this.cardStrapline || "").trim();
     this.winnerAnnouncement = String(this.winnerAnnouncement || "").trim();
 
     next();

@@ -116,6 +116,7 @@ const emptyEvent = () => ({
   slug: "",
   status: "DRAFT",
   serverLogoUrl: "",
+  cardStrapline: "",
   manualEventPublish: false,
   manualWinnerPublish: false,
   winnerAnnouncement: "",
@@ -166,6 +167,7 @@ const normalizeEvent = (event) => ({
   slug: event.slug || "",
   status: STATUS_OPTIONS.includes(event.status) ? event.status : "DRAFT",
   serverLogoUrl: event.serverLogoUrl || "",
+  cardStrapline: event.cardStrapline || "",
   manualEventPublish: Boolean(event.manualEventPublish),
   manualWinnerPublish: Boolean(event.manualWinnerPublish),
   winnerAnnouncement: event.winnerAnnouncement || "",
@@ -457,6 +459,7 @@ const EventBuilderPage = () => {
     slug: slugify(draft.slug || draft.title),
     status: draft.status,
     serverLogoUrl: draft.serverLogoUrl || "",
+    cardStrapline: String(draft.cardStrapline || ""),
     manualEventPublish: Boolean(draft.manualEventPublish),
     manualWinnerPublish: Boolean(draft.manualWinnerPublish),
     winnerAnnouncement: String(draft.winnerAnnouncement || ""),
@@ -781,6 +784,21 @@ const EventBuilderPage = () => {
                       </MenuItem>
                     ))}
                   </TextField>
+                </Grid>
+
+                <Grid size={12}>
+                  <TextField
+                    value={draft.cardStrapline || ""}
+                    onChange={(event) =>
+                      updateDraft({ cardStrapline: event.target.value })
+                    }
+                    label="Event Card Description"
+                    placeholder="Shown in event cards on the public event board"
+                    multiline
+                    rows={2}
+                    fullWidth
+                    size="small"
+                  />
                 </Grid>
 
                 <Grid size={{ xs: 12, md: 4 }}>
