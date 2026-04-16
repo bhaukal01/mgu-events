@@ -1,4 +1,25 @@
 import { useEffect, useMemo, useState } from "react";
+import {
+  Alert,
+  Box,
+  Button,
+  Chip,
+  Grid,
+  MenuItem,
+  Paper,
+  Skeleton,
+  Stack,
+  Switch,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  TextField,
+  Typography,
+} from "@mui/material";
+import { ArrowDown, ArrowUp, Plus, Trash2 } from "lucide-react";
 import { api } from "../../lib/api.js";
 import AdminShell from "../../components/admin/AdminShell.jsx";
 import AdminImageUpload from "../../components/admin/AdminImageUpload.jsx";
@@ -584,716 +605,804 @@ const EventBuilderPage = () => {
       subtitle="Create and edit events, then link already-built standalone forms."
       actions={
         <>
-          <button
+          <Button
             type="button"
             onClick={createNewEvent}
-            className="rounded-lg border border-emerald-400/20 bg-slate-900/70 px-3 py-2 text-xs font-semibold uppercase tracking-wider text-slate-300"
+            variant="outlined"
+            startIcon={<Plus size={16} />}
           >
             New Event
-          </button>
-          <button
+          </Button>
+          <Button
             type="button"
             onClick={saveEvent}
             disabled={saving}
-            className="btn-prism rounded-lg px-3 py-2 text-xs font-bold uppercase tracking-wider disabled:cursor-not-allowed disabled:opacity-60"
+            variant="contained"
+            color="primary"
           >
             {saving ? "Saving..." : "Save Event"}
-          </button>
-          <button
+          </Button>
+          <Button
             type="button"
             onClick={markEventPublished}
-            className="rounded-lg border border-cyan-300/45 bg-cyan-500/10 px-3 py-2 text-xs font-semibold uppercase tracking-wider text-cyan-100"
+            variant="outlined"
+            color="secondary"
           >
             Publish Event
-          </button>
-          <button
+          </Button>
+          <Button
             type="button"
             onClick={markWinnerPublished}
-            className="rounded-lg border border-amber-300/45 bg-amber-500/10 px-3 py-2 text-xs font-semibold uppercase tracking-wider text-amber-100"
+            variant="outlined"
+            color="secondary"
           >
             Publish Winner
-          </button>
-          <button
+          </Button>
+          <Button
             type="button"
             onClick={deleteEvent}
             disabled={!activeEventId || deletingEvent || saving}
-            className="rounded-lg border border-red-500/45 bg-red-500/10 px-3 py-2 text-xs font-semibold uppercase tracking-wider text-red-200 disabled:opacity-55"
+            color="error"
+            variant="outlined"
+            startIcon={<Trash2 size={16} />}
           >
             {deletingEvent ? "Deleting..." : "Delete Event"}
-          </button>
+          </Button>
         </>
       }
     >
       {notice ? (
-        <p className="mb-4 rounded-xl border border-cyan-400/40 bg-cyan-500/10 px-3 py-2 text-sm text-cyan-100">
+        <Alert severity="success" sx={{ mb: 2 }}>
           {notice}
-        </p>
+        </Alert>
       ) : null}
 
       {error ? (
-        <p className="mb-4 rounded-xl border border-red-500/45 bg-red-500/12 px-3 py-2 text-sm text-red-100">
+        <Alert severity="error" sx={{ mb: 2 }}>
           {error}
-        </p>
+        </Alert>
       ) : null}
 
-      <div className="grid gap-6 xl:grid-cols-[320px_1fr]">
-        <aside className="rounded-2xl border border-emerald-400/20 bg-panel/80 p-4">
-          <h2 className="text-lg font-black uppercase text-ink">
-            Server Events
-          </h2>
-          <p className="mt-1 text-xs text-slate-400">
-            Select an event to edit.
-          </p>
+      <Grid container spacing={2}>
+        <Grid size={{ xs: 12, xl: 3 }}>
+          <Paper sx={{ p: 2 }}>
+            <Typography variant="h6" color="primary.main">
+              Server Events
+            </Typography>
+            <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+              Select an event to edit.
+            </Typography>
 
-          <div className="mt-4 space-y-2">
-            {loadingEvents ? (
-              <div className="h-24 animate-pulse rounded-xl border border-emerald-400/20 bg-slate-900/50" />
-            ) : null}
+            <Stack spacing={1.25} sx={{ mt: 2 }}>
+              {loadingEvents ? (
+                <Skeleton
+                  variant="rectangular"
+                  height={96}
+                  sx={{ borderRadius: 2 }}
+                />
+              ) : null}
 
-            {!loadingEvents && events.length === 0 ? (
-              <p className="rounded-xl border border-emerald-400/15 bg-slate-900/45 px-3 py-2 text-xs text-slate-400">
-                No events yet. Create your first event.
-              </p>
-            ) : null}
+              {!loadingEvents && events.length === 0 ? (
+                <Typography variant="body2" color="text.secondary">
+                  No events yet. Create your first event.
+                </Typography>
+              ) : null}
 
-            {!loadingEvents
-              ? events.map((event) => {
-                  const isActive =
-                    String(activeEventId || "") === String(event._id || "");
+              {!loadingEvents
+                ? events.map((event) => {
+                    const isActive =
+                      String(activeEventId || "") === String(event._id || "");
 
-                  return (
-                    <button
-                      key={event._id}
-                      type="button"
-                      onClick={() => selectEvent(event)}
-                      className={`interactive-chip w-full rounded-xl border px-3 py-2 text-left ${
-                        isActive
-                          ? "is-active border-amber-300/70 bg-amber-500/15"
-                          : "border-emerald-400/20 bg-slate-900/45"
-                      }`}
-                    >
-                      <p
-                        className={`text-xs uppercase tracking-wider ${
-                          isActive ? "text-amber-100" : "text-slate-400"
-                        }`}
+                    return (
+                      <Button
+                        key={event._id}
+                        type="button"
+                        onClick={() => selectEvent(event)}
+                        variant={isActive ? "contained" : "outlined"}
+                        color={isActive ? "secondary" : "primary"}
+                        fullWidth
+                        sx={{
+                          justifyContent: "space-between",
+                          alignItems: "flex-start",
+                          textAlign: "left",
+                          p: 1.5,
+                        }}
                       >
-                        {event.status}
-                      </p>
-                      <p className="mt-1 text-sm font-bold text-ink">
-                        {event.title}
-                      </p>
-                      <p
-                        className={`mt-1 truncate text-xs ${
-                          isActive ? "text-amber-100/85" : "text-slate-400"
-                        }`}
-                      >
-                        /{event.slug}
-                      </p>
-                    </button>
-                  );
-                })
-              : null}
-          </div>
-        </aside>
+                        <Box>
+                          <Typography variant="caption" sx={{ opacity: 0.9 }}>
+                            {event.status}
+                          </Typography>
+                          <Typography variant="subtitle2">
+                            {event.title}
+                          </Typography>
+                          <Typography variant="caption" sx={{ opacity: 0.9 }}>
+                            /{event.slug}
+                          </Typography>
+                        </Box>
+                      </Button>
+                    );
+                  })
+                : null}
+            </Stack>
+          </Paper>
+        </Grid>
 
-        <section className="space-y-6">
-          <article className="rounded-2xl border border-emerald-400/20 bg-panel/80 p-4 sm:p-5">
-            <h2 className="text-lg font-black uppercase text-ink">
-              Event Settings
-            </h2>
-            <div className="mt-4 grid gap-3 sm:grid-cols-2">
-              <label className="block">
-                <span className="mb-1 block text-xs uppercase tracking-wider text-slate-400">
-                  Title
-                </span>
-                <input
-                  value={draft.title}
-                  onChange={(event) =>
-                    updateDraft({ title: event.target.value })
-                  }
-                  onBlur={() => {
-                    if (!draft.slug.trim()) {
-                      updateDraft({ slug: slugify(draft.title) });
+        <Grid size={{ xs: 12, xl: 9 }}>
+          <Stack spacing={2}>
+            <Paper sx={{ p: { xs: 2, sm: 3 } }}>
+              <Typography variant="h6" color="primary.main">
+                Event Settings
+              </Typography>
+
+              <Grid container spacing={1.5} sx={{ mt: 1 }}>
+                <Grid size={{ xs: 12, md: 6 }}>
+                  <TextField
+                    value={draft.title}
+                    onChange={(event) =>
+                      updateDraft({ title: event.target.value })
                     }
-                  }}
-                  className="w-full rounded-lg border border-emerald-400/20 bg-slate-900/65 px-3 py-2 text-sm text-ink outline-none transition focus:border-amber-300"
-                />
-              </label>
+                    onBlur={() => {
+                      if (!draft.slug.trim()) {
+                        updateDraft({ slug: slugify(draft.title) });
+                      }
+                    }}
+                    label="Title"
+                    fullWidth
+                    size="small"
+                  />
+                </Grid>
 
-              <label className="block">
-                <span className="mb-1 block text-xs uppercase tracking-wider text-slate-400">
-                  Slug
-                </span>
-                <input
-                  value={draft.slug}
-                  onChange={(event) =>
-                    updateDraft({ slug: slugify(event.target.value) })
-                  }
-                  className="w-full rounded-lg border border-emerald-400/20 bg-slate-900/65 px-3 py-2 text-sm text-ink outline-none transition focus:border-amber-300"
-                />
-              </label>
+                <Grid size={{ xs: 12, md: 6 }}>
+                  <TextField
+                    value={draft.slug}
+                    onChange={(event) =>
+                      updateDraft({ slug: slugify(event.target.value) })
+                    }
+                    label="Slug"
+                    fullWidth
+                    size="small"
+                  />
+                </Grid>
 
-              <label className="block">
-                <span className="mb-1 block text-xs uppercase tracking-wider text-slate-400">
-                  Status
-                </span>
-                <select
-                  value={draft.status}
-                  onChange={(event) =>
-                    updateDraft({ status: event.target.value })
-                  }
-                  className="w-full rounded-lg border border-emerald-400/20 bg-slate-900/65 px-3 py-2 text-sm text-ink outline-none transition focus:border-amber-300"
-                >
-                  {STATUS_OPTIONS.map((status) => (
-                    <option key={status} value={status}>
-                      {status}
-                    </option>
-                  ))}
-                </select>
-              </label>
+                <Grid size={{ xs: 12, md: 4 }}>
+                  <TextField
+                    select
+                    value={draft.status}
+                    onChange={(event) =>
+                      updateDraft({ status: event.target.value })
+                    }
+                    label="Status"
+                    fullWidth
+                    size="small"
+                  >
+                    {STATUS_OPTIONS.map((status) => (
+                      <MenuItem key={status} value={status}>
+                        {status}
+                      </MenuItem>
+                    ))}
+                  </TextField>
+                </Grid>
 
-              <label className="block">
-                <span className="mb-1 block text-xs uppercase tracking-wider text-slate-400">
-                  Starts At
-                </span>
-                <input
-                  type="datetime-local"
-                  value={draft.startsAt}
-                  onChange={(event) =>
-                    updateDraft({ startsAt: event.target.value })
-                  }
-                  className="w-full rounded-lg border border-emerald-400/20 bg-slate-900/65 px-3 py-2 text-sm text-ink outline-none transition focus:border-amber-300"
-                />
-              </label>
+                <Grid size={{ xs: 12, md: 4 }}>
+                  <TextField
+                    type="datetime-local"
+                    value={draft.startsAt}
+                    onChange={(event) =>
+                      updateDraft({ startsAt: event.target.value })
+                    }
+                    label="Starts At"
+                    fullWidth
+                    size="small"
+                    slotProps={{ inputLabel: { shrink: true } }}
+                  />
+                </Grid>
 
-              <label className="block">
-                <span className="mb-1 block text-xs uppercase tracking-wider text-slate-400">
-                  Ends At
-                </span>
-                <input
-                  type="datetime-local"
-                  value={draft.endsAt}
-                  onChange={(event) =>
-                    updateDraft({ endsAt: event.target.value })
-                  }
-                  className="w-full rounded-lg border border-emerald-400/20 bg-slate-900/65 px-3 py-2 text-sm text-ink outline-none transition focus:border-amber-300"
-                />
-              </label>
-            </div>
+                <Grid size={{ xs: 12, md: 4 }}>
+                  <TextField
+                    type="datetime-local"
+                    value={draft.endsAt}
+                    onChange={(event) =>
+                      updateDraft({ endsAt: event.target.value })
+                    }
+                    label="Ends At"
+                    fullWidth
+                    size="small"
+                    slotProps={{ inputLabel: { shrink: true } }}
+                  />
+                </Grid>
+              </Grid>
 
-            <div className="mt-4 rounded-xl border border-emerald-400/15 bg-slate-900/45 p-3">
-              <p className="text-xs font-semibold uppercase tracking-wider text-slate-300">
-                Main Event Card Logo
-              </p>
-              <input
-                value={draft.serverLogoUrl || ""}
-                onChange={(event) =>
-                  updateDraft({ serverLogoUrl: event.target.value })
-                }
-                placeholder="https://..."
-                className="mt-2 w-full rounded border border-emerald-400/20 bg-slate-900 px-3 py-2 text-xs text-slate-100"
-              />
-              <div className="mt-2">
-                <AdminImageUpload
-                  label="Card logo"
+              <Paper variant="outlined" sx={{ mt: 2, p: 1.5 }}>
+                <Typography variant="subtitle2" color="primary.main">
+                  Main Event Card Logo
+                </Typography>
+                <TextField
                   value={draft.serverLogoUrl || ""}
-                  onChange={(url) => updateDraft({ serverLogoUrl: url })}
-                  folder="/events-mgu-one/admin/card-logos"
-                />
-              </div>
-            </div>
-
-            <div className="mt-4 rounded-xl border border-cyan-300/20 bg-slate-900/45 p-3">
-              <p className="text-xs font-semibold uppercase tracking-wider text-cyan-100">
-                Manual Publish Controls
-              </p>
-
-              <label className="mt-2 inline-flex items-center gap-2 text-xs text-slate-200">
-                <input
-                  type="checkbox"
-                  checked={Boolean(draft.manualEventPublish)}
                   onChange={(event) =>
-                    updateDraft({ manualEventPublish: event.target.checked })
+                    updateDraft({ serverLogoUrl: event.target.value })
                   }
+                  placeholder="https://..."
+                  size="small"
+                  fullWidth
+                  sx={{ mt: 1 }}
                 />
-                Publish event manually (visible even if status is not ACTIVE)
-              </label>
+                <Box sx={{ mt: 1.5 }}>
+                  <AdminImageUpload
+                    label="Card logo"
+                    value={draft.serverLogoUrl || ""}
+                    onChange={(url) => updateDraft({ serverLogoUrl: url })}
+                    folder="/events-mgu-one/admin/card-logos"
+                  />
+                </Box>
+              </Paper>
 
-              <label className="mt-2 inline-flex items-center gap-2 text-xs text-slate-200">
-                <input
-                  type="checkbox"
-                  checked={Boolean(draft.manualWinnerPublish)}
-                  onChange={(event) =>
-                    updateDraft({ manualWinnerPublish: event.target.checked })
-                  }
-                />
-                Publish winners manually
-              </label>
+              <Paper variant="outlined" sx={{ mt: 2, p: 1.5 }}>
+                <Typography variant="subtitle2" color="primary.main">
+                  Manual Publish Controls
+                </Typography>
 
-              <label className="mt-3 block">
-                <span className="mb-1 block text-[11px] uppercase tracking-wider text-slate-400">
-                  Winner Announcement
-                </span>
-                <textarea
+                <Stack
+                  direction="row"
+                  spacing={1}
+                  alignItems="center"
+                  sx={{ mt: 1 }}
+                >
+                  <Switch
+                    checked={Boolean(draft.manualEventPublish)}
+                    onChange={(event) =>
+                      updateDraft({ manualEventPublish: event.target.checked })
+                    }
+                  />
+                  <Typography variant="body2">
+                    Publish event manually (visible even if status is not
+                    ACTIVE)
+                  </Typography>
+                </Stack>
+
+                <Stack direction="row" spacing={1} alignItems="center">
+                  <Switch
+                    checked={Boolean(draft.manualWinnerPublish)}
+                    onChange={(event) =>
+                      updateDraft({ manualWinnerPublish: event.target.checked })
+                    }
+                  />
+                  <Typography variant="body2">
+                    Publish winners manually
+                  </Typography>
+                </Stack>
+
+                <TextField
+                  multiline
                   rows={4}
                   value={draft.winnerAnnouncement || ""}
                   onChange={(event) =>
                     updateDraft({ winnerAnnouncement: event.target.value })
                   }
+                  label="Winner Announcement"
                   placeholder="Example: Team Phoenix wins with 187 points."
-                  className="w-full rounded border border-cyan-300/20 bg-slate-900 px-3 py-2 text-xs text-slate-100"
+                  fullWidth
+                  size="small"
+                  sx={{ mt: 1 }}
                 />
-              </label>
-            </div>
-          </article>
+              </Paper>
+            </Paper>
 
-          <article className="rounded-2xl border border-emerald-400/20 bg-panel/80 p-4 sm:p-5">
-            <div className="flex flex-wrap items-center justify-between gap-2">
-              <h2 className="text-lg font-black uppercase text-ink">
-                Visual Block Builder
-              </h2>
-              <div className="flex flex-wrap gap-2">
-                {BLOCK_TYPES.map((type) => (
-                  <button
-                    key={type}
-                    type="button"
-                    onClick={() => addBlock(type)}
-                    className="rounded-lg border border-emerald-400/20 bg-slate-900/60 px-2.5 py-1.5 text-[11px] font-semibold uppercase tracking-wider text-slate-300"
+            <Paper sx={{ p: { xs: 2, sm: 3 } }}>
+              <Stack
+                direction={{ xs: "column", md: "row" }}
+                justifyContent="space-between"
+                spacing={1.5}
+                alignItems={{ xs: "flex-start", md: "center" }}
+              >
+                <Typography variant="h6" color="primary.main">
+                  Visual Block Builder
+                </Typography>
+                <Stack direction="row" spacing={1} useFlexGap flexWrap="wrap">
+                  {BLOCK_TYPES.map((type) => (
+                    <Button
+                      key={type}
+                      type="button"
+                      onClick={() => addBlock(type)}
+                      variant="outlined"
+                      size="small"
+                    >
+                      + {type}
+                    </Button>
+                  ))}
+                </Stack>
+              </Stack>
+
+              <Stack spacing={1.5} sx={{ mt: 2 }}>
+                {draft.layout.map((block, index) => (
+                  <Paper
+                    key={`${block.type}-${index}`}
+                    variant="outlined"
+                    sx={{ p: 1.5 }}
                   >
-                    + {type}
-                  </button>
-                ))}
-              </div>
-            </div>
+                    <Stack
+                      direction={{ xs: "column", md: "row" }}
+                      justifyContent="space-between"
+                      spacing={1.5}
+                    >
+                      <Stack direction="row" spacing={1} alignItems="center">
+                        <Chip label={`Block ${index + 1}`} size="small" />
+                        <TextField
+                          select
+                          value={block.type}
+                          onChange={(event) =>
+                            updateBlockType(index, event.target.value)
+                          }
+                          size="small"
+                          sx={{ minWidth: 180 }}
+                        >
+                          {BLOCK_TYPES.map((type) => (
+                            <MenuItem key={type} value={type}>
+                              {type}
+                            </MenuItem>
+                          ))}
+                        </TextField>
+                      </Stack>
 
-            <div className="mt-4 space-y-4">
-              {draft.layout.map((block, index) => (
-                <div
-                  key={`${block.type}-${index}`}
-                  className="rounded-xl border border-emerald-400/20 bg-slate-950/55 p-3"
-                >
-                  <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-                    <div className="flex items-center gap-2">
-                      <span className="rounded bg-slate-800 px-2 py-1 text-[11px] text-slate-300">
-                        Block {index + 1}
-                      </span>
-                      <select
-                        value={block.type}
-                        onChange={(event) =>
-                          updateBlockType(index, event.target.value)
-                        }
-                        className="rounded border border-emerald-400/20 bg-slate-900 px-2 py-1 text-xs text-slate-200"
+                      <Stack
+                        direction="row"
+                        spacing={1}
+                        useFlexGap
+                        flexWrap="wrap"
                       >
-                        {BLOCK_TYPES.map((type) => (
-                          <option key={type} value={type}>
-                            {type}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
+                        <Button
+                          type="button"
+                          onClick={() => moveBlock(index, -1)}
+                          disabled={index === 0}
+                          variant="outlined"
+                          size="small"
+                          startIcon={<ArrowUp size={14} />}
+                        >
+                          Move Up
+                        </Button>
+                        <Button
+                          type="button"
+                          onClick={() => moveBlock(index, 1)}
+                          disabled={index === draft.layout.length - 1}
+                          variant="outlined"
+                          size="small"
+                          startIcon={<ArrowDown size={14} />}
+                        >
+                          Move Down
+                        </Button>
+                        <Button
+                          type="button"
+                          onClick={() => removeBlock(index)}
+                          color="error"
+                          variant="outlined"
+                          size="small"
+                          startIcon={<Trash2 size={14} />}
+                        >
+                          Remove
+                        </Button>
+                      </Stack>
+                    </Stack>
 
-                    <div className="flex flex-wrap gap-2">
-                      <button
-                        type="button"
-                        onClick={() => moveBlock(index, -1)}
-                        disabled={index === 0}
-                        className="rounded border border-emerald-400/20 bg-slate-900 px-2 py-1 text-[11px] font-semibold uppercase tracking-wider text-slate-300 disabled:opacity-45"
-                      >
-                        Move Up
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => moveBlock(index, 1)}
-                        disabled={index === draft.layout.length - 1}
-                        className="rounded border border-emerald-400/20 bg-slate-900 px-2 py-1 text-[11px] font-semibold uppercase tracking-wider text-slate-300 disabled:opacity-45"
-                      >
-                        Move Down
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => removeBlock(index)}
-                        className="rounded border border-red-500/40 bg-red-500/10 px-2 py-1 text-[11px] font-semibold uppercase tracking-wider text-red-200"
-                      >
-                        Remove
-                      </button>
-                    </div>
-                  </div>
+                    {block.type === "HERO_EXPLOSION" ? (
+                      <Stack spacing={1.25} sx={{ mt: 1.5 }}>
+                        <Grid container spacing={1.25}>
+                          <Grid size={{ xs: 12, md: 6 }}>
+                            <TextField
+                              label="Hero title"
+                              value={block.data.title || ""}
+                              onChange={(event) =>
+                                patchBlockData(index, {
+                                  title: event.target.value,
+                                })
+                              }
+                              fullWidth
+                              size="small"
+                            />
+                          </Grid>
+                          <Grid size={{ xs: 12, md: 6 }}>
+                            <TextField
+                              label="Hero subtitle"
+                              value={block.data.subtitle || ""}
+                              onChange={(event) =>
+                                patchBlockData(index, {
+                                  subtitle: event.target.value,
+                                })
+                              }
+                              fullWidth
+                              size="small"
+                            />
+                          </Grid>
+                          <Grid size={{ xs: 12, md: 6 }}>
+                            <TextField
+                              label="CTA label"
+                              value={block.data.ctaLabel || ""}
+                              onChange={(event) =>
+                                patchBlockData(index, {
+                                  ctaLabel: event.target.value,
+                                })
+                              }
+                              fullWidth
+                              size="small"
+                            />
+                          </Grid>
+                          <Grid size={{ xs: 12, md: 6 }}>
+                            <TextField
+                              label="CTA href"
+                              value={block.data.ctaHref || ""}
+                              onChange={(event) =>
+                                patchBlockData(index, {
+                                  ctaHref: event.target.value,
+                                })
+                              }
+                              fullWidth
+                              size="small"
+                            />
+                          </Grid>
+                        </Grid>
 
-                  {block.type === "HERO_EXPLOSION" ? (
-                    <div className="space-y-2">
-                      <div className="grid gap-2 sm:grid-cols-2">
-                        <input
-                          placeholder="Hero title"
+                        <Paper variant="outlined" sx={{ p: 1.5 }}>
+                          <Typography variant="caption" color="text.secondary">
+                            Hero Background Image URL
+                          </Typography>
+                          <TextField
+                            placeholder="https://..."
+                            value={block.data.imageUrl || ""}
+                            onChange={(event) =>
+                              patchBlockData(index, {
+                                imageUrl: event.target.value,
+                              })
+                            }
+                            fullWidth
+                            size="small"
+                            sx={{ mt: 1 }}
+                          />
+                          <Box sx={{ mt: 1.5 }}>
+                            <AdminImageUpload
+                              label="Hero image"
+                              value={block.data.imageUrl || ""}
+                              onChange={(url) =>
+                                patchBlockData(index, { imageUrl: url })
+                              }
+                              folder="/events-mgu-one/admin/hero"
+                            />
+                          </Box>
+                        </Paper>
+
+                        <Paper variant="outlined" sx={{ p: 1.5 }}>
+                          <Typography variant="caption" color="text.secondary">
+                            Hero Logo URL
+                          </Typography>
+                          <TextField
+                            placeholder="https://..."
+                            value={block.data.logoUrl || ""}
+                            onChange={(event) =>
+                              patchBlockData(index, {
+                                logoUrl: event.target.value,
+                              })
+                            }
+                            fullWidth
+                            size="small"
+                            sx={{ mt: 1 }}
+                          />
+                          <Box sx={{ mt: 1.5 }}>
+                            <AdminImageUpload
+                              label="Hero logo"
+                              value={block.data.logoUrl || ""}
+                              onChange={(url) =>
+                                patchBlockData(index, { logoUrl: url })
+                              }
+                              folder="/events-mgu-one/admin/hero-logo"
+                            />
+                          </Box>
+                        </Paper>
+                      </Stack>
+                    ) : null}
+
+                    {block.type === "TEXT_GLOW_BLOCK" ? (
+                      <Stack spacing={1.25} sx={{ mt: 1.5 }}>
+                        <TextField
+                          label="Block heading"
+                          value={block.data.heading || ""}
+                          onChange={(event) =>
+                            patchBlockData(index, {
+                              heading: event.target.value,
+                            })
+                          }
+                          fullWidth
+                          size="small"
+                        />
+                        <TextField
+                          multiline
+                          rows={5}
+                          label="Block body"
+                          value={block.data.body || ""}
+                          onChange={(event) =>
+                            patchBlockData(index, { body: event.target.value })
+                          }
+                          fullWidth
+                          size="small"
+                        />
+                      </Stack>
+                    ) : null}
+
+                    {block.type === "IMAGE_GRID" ? (
+                      <Stack spacing={1.25} sx={{ mt: 1.5 }}>
+                        <TextField
+                          label="Grid caption"
+                          value={block.data.caption || ""}
+                          onChange={(event) =>
+                            patchBlockData(index, {
+                              caption: event.target.value,
+                            })
+                          }
+                          fullWidth
+                          size="small"
+                        />
+
+                        <Paper variant="outlined" sx={{ p: 1.5 }}>
+                          <Stack spacing={1.25}>
+                            {(block.data.images || []).map(
+                              (image, imageIndex) => (
+                                <Paper
+                                  key={`${image.url || "image"}-${imageIndex}`}
+                                  variant="outlined"
+                                  sx={{ p: 1.25 }}
+                                >
+                                  <Grid container spacing={1.25}>
+                                    <Grid size={{ xs: 12, md: 6 }}>
+                                      <TextField
+                                        label="Image URL"
+                                        value={image.url || ""}
+                                        onChange={(event) =>
+                                          patchGridImage(index, imageIndex, {
+                                            url: event.target.value,
+                                          })
+                                        }
+                                        fullWidth
+                                        size="small"
+                                      />
+                                    </Grid>
+                                    <Grid size={{ xs: 12, md: 6 }}>
+                                      <TextField
+                                        label="Image alt"
+                                        value={image.alt || ""}
+                                        onChange={(event) =>
+                                          patchGridImage(index, imageIndex, {
+                                            alt: event.target.value,
+                                          })
+                                        }
+                                        fullWidth
+                                        size="small"
+                                      />
+                                    </Grid>
+                                  </Grid>
+
+                                  <Box sx={{ mt: 1.5 }}>
+                                    <AdminImageUpload
+                                      label="Grid image"
+                                      value={image.url || ""}
+                                      onChange={(url) =>
+                                        patchGridImage(index, imageIndex, {
+                                          url,
+                                        })
+                                      }
+                                      folder="/events-mgu-one/admin/grid"
+                                    />
+                                  </Box>
+
+                                  <Button
+                                    type="button"
+                                    onClick={() =>
+                                      removeGridImage(index, imageIndex)
+                                    }
+                                    color="error"
+                                    variant="outlined"
+                                    size="small"
+                                    startIcon={<Trash2 size={14} />}
+                                    sx={{ mt: 1.25 }}
+                                  >
+                                    Remove Image
+                                  </Button>
+                                </Paper>
+                              ),
+                            )}
+
+                            <Button
+                              type="button"
+                              onClick={() => addImageToGrid(index)}
+                              variant="outlined"
+                              size="small"
+                              startIcon={<Plus size={14} />}
+                              sx={{ alignSelf: "flex-start" }}
+                            >
+                              Add Grid Image
+                            </Button>
+                          </Stack>
+                        </Paper>
+                      </Stack>
+                    ) : null}
+
+                    {block.type === "REWARD_TIER" ||
+                    block.type === "RULES_BLOCK" ? (
+                      <Stack spacing={1.25} sx={{ mt: 1.5 }}>
+                        <TextField
+                          label={
+                            block.type === "RULES_BLOCK"
+                              ? "Rules heading"
+                              : "Reward tier title"
+                          }
                           value={block.data.title || ""}
                           onChange={(event) =>
                             patchBlockData(index, { title: event.target.value })
                           }
-                          className="rounded border border-emerald-400/20 bg-slate-900 px-3 py-2 text-sm text-slate-100"
+                          fullWidth
+                          size="small"
                         />
-                        <input
-                          placeholder="Hero subtitle"
-                          value={block.data.subtitle || ""}
+                        <TextField
+                          multiline
+                          rows={5}
+                          label={
+                            block.type === "RULES_BLOCK"
+                              ? "One rule per line"
+                              : "One reward item per line"
+                          }
+                          value={
+                            Array.isArray(block.data.items)
+                              ? block.data.items.join("\n")
+                              : ""
+                          }
                           onChange={(event) =>
                             patchBlockData(index, {
-                              subtitle: event.target.value,
+                              // Keep raw lines while editing so spaces are not lost.
+                              items: event.target.value.split("\n"),
                             })
                           }
-                          className="rounded border border-emerald-400/20 bg-slate-900 px-3 py-2 text-sm text-slate-100"
+                          fullWidth
+                          size="small"
                         />
-                        <input
-                          placeholder="CTA label"
-                          value={block.data.ctaLabel || ""}
-                          onChange={(event) =>
-                            patchBlockData(index, {
-                              ctaLabel: event.target.value,
-                            })
-                          }
-                          className="rounded border border-emerald-400/20 bg-slate-900 px-3 py-2 text-sm text-slate-100"
-                        />
-                        <input
-                          placeholder="CTA href"
-                          value={block.data.ctaHref || ""}
-                          onChange={(event) =>
-                            patchBlockData(index, {
-                              ctaHref: event.target.value,
-                            })
-                          }
-                          className="rounded border border-emerald-400/20 bg-slate-900 px-3 py-2 text-sm text-slate-100"
-                        />
-                      </div>
+                      </Stack>
+                    ) : null}
 
-                      <div className="rounded border border-emerald-400/15 bg-slate-900/60 p-3">
-                        <label className="mb-1 block text-[11px] uppercase tracking-wider text-slate-400">
-                          Hero Background Image URL
-                        </label>
-                        <input
-                          placeholder="https://..."
-                          value={block.data.imageUrl || ""}
-                          onChange={(event) =>
-                            patchBlockData(index, {
-                              imageUrl: event.target.value,
-                            })
-                          }
-                          className="w-full rounded border border-emerald-400/20 bg-slate-900 px-3 py-2 text-xs text-slate-100"
-                        />
-                        <div className="mt-2">
-                          <AdminImageUpload
-                            label="Hero image"
-                            value={block.data.imageUrl || ""}
-                            onChange={(url) =>
-                              patchBlockData(index, { imageUrl: url })
-                            }
-                            folder="/events-mgu-one/admin/hero"
-                          />
-                        </div>
-                      </div>
-
-                      <div className="rounded border border-emerald-400/15 bg-slate-900/60 p-3">
-                        <label className="mb-1 block text-[11px] uppercase tracking-wider text-slate-400">
-                          Hero Logo URL
-                        </label>
-                        <input
-                          placeholder="https://..."
-                          value={block.data.logoUrl || ""}
-                          onChange={(event) =>
-                            patchBlockData(index, {
-                              logoUrl: event.target.value,
-                            })
-                          }
-                          className="w-full rounded border border-emerald-400/20 bg-slate-900 px-3 py-2 text-xs text-slate-100"
-                        />
-                        <div className="mt-2">
-                          <AdminImageUpload
-                            label="Hero logo"
-                            value={block.data.logoUrl || ""}
-                            onChange={(url) =>
-                              patchBlockData(index, { logoUrl: url })
-                            }
-                            folder="/events-mgu-one/admin/hero-logo"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  ) : null}
-
-                  {block.type === "TEXT_GLOW_BLOCK" ? (
-                    <div className="space-y-2">
-                      <input
-                        placeholder="Block heading"
-                        value={block.data.heading || ""}
-                        onChange={(event) =>
-                          patchBlockData(index, { heading: event.target.value })
-                        }
-                        className="w-full rounded border border-emerald-400/20 bg-slate-900 px-3 py-2 text-sm text-slate-100"
-                      />
-                      <textarea
-                        rows={5}
-                        placeholder="Block body"
-                        value={block.data.body || ""}
-                        onChange={(event) =>
-                          patchBlockData(index, { body: event.target.value })
-                        }
-                        className="w-full rounded border border-emerald-400/20 bg-slate-900 px-3 py-2 text-sm text-slate-100"
-                      />
-                    </div>
-                  ) : null}
-
-                  {block.type === "IMAGE_GRID" ? (
-                    <div className="space-y-2">
-                      <input
-                        placeholder="Grid caption"
-                        value={block.data.caption || ""}
-                        onChange={(event) =>
-                          patchBlockData(index, { caption: event.target.value })
-                        }
-                        className="w-full rounded border border-emerald-400/20 bg-slate-900 px-3 py-2 text-sm text-slate-100"
-                      />
-
-                      <div className="space-y-2 rounded border border-emerald-400/15 bg-slate-900/60 p-3">
-                        {(block.data.images || []).map((image, imageIndex) => (
-                          <div
-                            key={`${image.url || "image"}-${imageIndex}`}
-                            className="rounded border border-emerald-400/15 bg-slate-900/70 p-2"
-                          >
-                            <div className="grid gap-2 sm:grid-cols-2">
-                              <input
-                                placeholder="Image URL"
-                                value={image.url || ""}
-                                onChange={(event) =>
-                                  patchGridImage(index, imageIndex, {
-                                    url: event.target.value,
-                                  })
-                                }
-                                className="rounded border border-emerald-400/20 bg-slate-900 px-2 py-1.5 text-xs text-slate-100"
-                              />
-                              <input
-                                placeholder="Image alt"
-                                value={image.alt || ""}
-                                onChange={(event) =>
-                                  patchGridImage(index, imageIndex, {
-                                    alt: event.target.value,
-                                  })
-                                }
-                                className="rounded border border-emerald-400/20 bg-slate-900 px-2 py-1.5 text-xs text-slate-100"
-                              />
-                            </div>
-
-                            <div className="mt-2">
-                              <AdminImageUpload
-                                label="Grid image"
-                                value={image.url || ""}
-                                onChange={(url) =>
-                                  patchGridImage(index, imageIndex, { url })
-                                }
-                                folder="/events-mgu-one/admin/grid"
-                              />
-                            </div>
-
-                            <button
-                              type="button"
-                              onClick={() => removeGridImage(index, imageIndex)}
-                              className="mt-2 rounded border border-red-500/40 bg-red-500/10 px-2 py-1 text-[11px] font-semibold uppercase tracking-wider text-red-200"
-                            >
-                              Remove Image
-                            </button>
-                          </div>
-                        ))}
-
-                        <button
-                          type="button"
-                          onClick={() => addImageToGrid(index)}
-                          className="rounded border border-emerald-400/20 bg-slate-900 px-2.5 py-1.5 text-[11px] font-semibold uppercase tracking-wider text-slate-300"
-                        >
-                          + Add Grid Image
-                        </button>
-                      </div>
-                    </div>
-                  ) : null}
-
-                  {block.type === "REWARD_TIER" ||
-                  block.type === "RULES_BLOCK" ? (
-                    <div className="space-y-2">
-                      <input
-                        placeholder={
-                          block.type === "RULES_BLOCK"
-                            ? "Rules heading"
-                            : "Reward tier title"
-                        }
-                        value={block.data.title || ""}
-                        onChange={(event) =>
-                          patchBlockData(index, { title: event.target.value })
-                        }
-                        className="w-full rounded border border-emerald-400/20 bg-slate-900 px-3 py-2 text-sm text-slate-100"
-                      />
-                      <textarea
-                        rows={5}
-                        placeholder={
-                          block.type === "RULES_BLOCK"
-                            ? "One rule per line"
-                            : "One reward item per line"
-                        }
-                        value={
-                          Array.isArray(block.data.items)
-                            ? block.data.items.join("\n")
-                            : ""
-                        }
-                        onChange={(event) =>
-                          patchBlockData(index, {
-                            // Keep raw lines while editing so spaces are not lost.
-                            items: event.target.value.split("\n"),
-                          })
-                        }
-                        className="w-full rounded border border-emerald-400/20 bg-slate-900 px-3 py-2 text-sm text-slate-100"
-                      />
-                    </div>
-                  ) : null}
-
-                  {block.type === "DYNAMIC_FORM" ? (
-                    <label className="block">
-                      <span className="mb-1 block text-xs uppercase tracking-wider text-slate-400">
-                        Linked Form ID
-                      </span>
-                      <select
+                    {block.type === "DYNAMIC_FORM" ? (
+                      <TextField
+                        select
+                        label="Linked Form ID"
                         value={block.data.formId || ""}
                         onChange={(event) =>
                           patchBlockData(index, { formId: event.target.value })
                         }
-                        className="w-full rounded border border-emerald-400/20 bg-slate-900 px-3 py-2 text-sm text-slate-100"
+                        fullWidth
+                        size="small"
+                        sx={{ mt: 1.5 }}
                       >
-                        <option value="">Select form</option>
+                        <MenuItem value="">Select form</MenuItem>
                         {forms.map((form) => (
-                          <option key={form.id} value={form.id}>
+                          <MenuItem key={form.id} value={form.id}>
                             {form.id} {form.title ? `- ${form.title}` : ""}
-                          </option>
+                          </MenuItem>
                         ))}
-                      </select>
-                    </label>
-                  ) : null}
-                </div>
-              ))}
-            </div>
-          </article>
+                      </TextField>
+                    ) : null}
+                  </Paper>
+                ))}
+              </Stack>
+            </Paper>
 
-          <article className="rounded-2xl border border-emerald-400/20 bg-panel/80 p-4 sm:p-5">
-            <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-              <h2 className="text-lg font-black uppercase text-ink">
-                Submission Viewer
-              </h2>
-              <div className="flex items-center gap-2">
-                <label className="text-xs uppercase tracking-wider text-slate-400">
-                  Form
-                </label>
-                <select
+            <Paper sx={{ p: { xs: 2, sm: 3 } }}>
+              <Stack
+                direction={{ xs: "column", md: "row" }}
+                justifyContent="space-between"
+                spacing={1.5}
+                alignItems={{ xs: "flex-start", md: "center" }}
+                sx={{ mb: 1 }}
+              >
+                <Typography variant="h6" color="primary.main">
+                  Submission Viewer
+                </Typography>
+                <TextField
+                  select
                   value={selectedFormId}
                   onChange={(event) => setSelectedFormId(event.target.value)}
-                  className="rounded border border-emerald-400/20 bg-slate-900 px-2 py-1.5 text-xs text-slate-100"
+                  label="Form"
+                  size="small"
+                  sx={{ minWidth: 180 }}
                 >
-                  <option value="">All</option>
+                  <MenuItem value="">All</MenuItem>
                   {forms.map((form) => (
-                    <option key={form.id} value={form.id}>
+                    <MenuItem key={form.id} value={form.id}>
                       {form.id}
-                    </option>
+                    </MenuItem>
                   ))}
-                </select>
-              </div>
-            </div>
+                </TextField>
+              </Stack>
 
-            {!activeEventId ? (
-              <p className="rounded-xl border border-emerald-400/20 bg-slate-900/50 px-3 py-2 text-xs text-slate-400">
-                Save or select an event to view submissions.
-              </p>
-            ) : null}
+              {!activeEventId ? (
+                <Alert severity="info" variant="outlined" sx={{ mb: 1.5 }}>
+                  Save or select an event to view submissions.
+                </Alert>
+              ) : null}
 
-            {activeEventId && loadingSubmissions ? (
-              <div className="h-24 animate-pulse rounded-xl border border-emerald-400/20 bg-slate-900/50" />
-            ) : null}
+              {activeEventId && loadingSubmissions ? (
+                <Skeleton
+                  variant="rectangular"
+                  height={96}
+                  sx={{ borderRadius: 2 }}
+                />
+              ) : null}
 
-            {activeEventId &&
-            !loadingSubmissions &&
-            visibleSubmissions.length === 0 ? (
-              <p className="rounded-xl border border-emerald-400/20 bg-slate-900/50 px-3 py-2 text-xs text-slate-400">
-                No submissions yet for this selection.
-              </p>
-            ) : null}
+              {activeEventId &&
+              !loadingSubmissions &&
+              visibleSubmissions.length === 0 ? (
+                <Alert severity="info" variant="outlined" sx={{ mb: 1.5 }}>
+                  No submissions yet for this selection.
+                </Alert>
+              ) : null}
 
-            {activeEventId &&
-            !loadingSubmissions &&
-            visibleSubmissions.length > 0 ? (
-              <div className="overflow-x-auto rounded-xl border border-emerald-400/20">
-                <table className="min-w-full divide-y divide-emerald-400/15 text-left text-xs text-slate-200">
-                  <thead className="bg-slate-900/80">
-                    <tr>
-                      <th className="px-3 py-2 font-semibold uppercase tracking-wider text-slate-400">
-                        Submitted At
-                      </th>
-                      <th className="px-3 py-2 font-semibold uppercase tracking-wider text-slate-400">
-                        Status
-                      </th>
-                      {(activeForm?.fields || []).map((field) => (
-                        <th
-                          key={field.name}
-                          className="px-3 py-2 font-semibold uppercase tracking-wider text-slate-400"
-                        >
-                          {field.label || field.name}
-                        </th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-emerald-400/15 bg-slate-950/40">
-                    {visibleSubmissions.map((submission) => {
-                      const values = submission.data || {};
+              {activeEventId &&
+              !loadingSubmissions &&
+              visibleSubmissions.length > 0 ? (
+                <TableContainer component={Paper} variant="outlined">
+                  <Table size="small">
+                    <TableHead>
+                      <TableRow>
+                        <TableCell>Submitted At</TableCell>
+                        <TableCell>Status</TableCell>
+                        {(activeForm?.fields || []).map((field) => (
+                          <TableCell key={field.name}>
+                            {field.label || field.name}
+                          </TableCell>
+                        ))}
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {visibleSubmissions.map((submission) => {
+                        const values = submission.data || {};
 
-                      return (
-                        <tr key={submission._id}>
-                          <td className="whitespace-nowrap px-3 py-2 text-slate-300">
-                            {new Date(submission.createdAt).toLocaleString()}
-                          </td>
-                          <td className="whitespace-nowrap px-3 py-2 text-slate-300">
-                            {submission.status}
-                          </td>
-                          {(activeForm?.fields || []).map((field) => {
-                            const value = values[field.name];
+                        return (
+                          <TableRow key={submission._id}>
+                            <TableCell>
+                              {new Date(submission.createdAt).toLocaleString()}
+                            </TableCell>
+                            <TableCell>{submission.status}</TableCell>
+                            {(activeForm?.fields || []).map((field) => {
+                              const value = values[field.name];
 
-                            if (field.type === "image_upload" && value) {
+                              if (field.type === "image_upload" && value) {
+                                return (
+                                  <TableCell key={field.name}>
+                                    <a
+                                      href={String(value)}
+                                      target="_blank"
+                                      rel="noreferrer"
+                                    >
+                                      View image
+                                    </a>
+                                  </TableCell>
+                                );
+                              }
+
                               return (
-                                <td key={field.name} className="px-3 py-2">
-                                  <a
-                                    href={String(value)}
-                                    target="_blank"
-                                    rel="noreferrer"
-                                    className="text-cyan-300 underline decoration-cyan-400/40 underline-offset-2"
-                                  >
-                                    View image
-                                  </a>
-                                </td>
+                                <TableCell key={field.name}>
+                                  {value ? String(value) : "-"}
+                                </TableCell>
                               );
-                            }
+                            })}
+                          </TableRow>
+                        );
+                      })}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+              ) : null}
+            </Paper>
 
-                            return (
-                              <td
-                                key={field.name}
-                                className="px-3 py-2 text-slate-300"
-                              >
-                                {value ? String(value) : "-"}
-                              </td>
-                            );
-                          })}
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
+            {loadingForms ? (
+              <Alert severity="info" variant="outlined">
+                Loading forms list for linking...
+              </Alert>
             ) : null}
-          </article>
-
-          {loadingForms ? (
-            <p className="rounded-xl border border-emerald-400/20 bg-slate-900/50 px-3 py-2 text-xs text-slate-400">
-              Loading forms list for linking...
-            </p>
-          ) : null}
-        </section>
-      </div>
+          </Stack>
+        </Grid>
+      </Grid>
     </AdminShell>
   );
 };

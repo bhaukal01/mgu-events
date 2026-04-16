@@ -1,5 +1,16 @@
 import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link as RouterLink, useNavigate } from "react-router-dom";
+import {
+  Alert,
+  Box,
+  Button,
+  Container,
+  Paper,
+  Stack,
+  TextField,
+  Typography,
+} from "@mui/material";
+import { Shield } from "lucide-react";
 import { api } from "../lib/api.js";
 
 const AdminLogin = () => {
@@ -62,99 +73,116 @@ const AdminLogin = () => {
 
   if (loadingSetupState) {
     return (
-      <main className="mx-auto flex min-h-screen w-full max-w-md items-center px-4 py-12 sm:px-6">
-        <section className="panel-voxel w-full rounded-3xl border border-emerald-400/20 bg-panel/85 p-8 shadow-neon-cube">
-          <p className="text-sm text-slate-300">
+      <Container
+        maxWidth="sm"
+        sx={{
+          minHeight: "100vh",
+          display: "flex",
+          alignItems: "center",
+          py: 6,
+        }}
+      >
+        <Paper sx={{ p: 4, width: "100%" }}>
+          <Typography variant="body2" color="text.secondary">
             Preparing secure admin access...
-          </p>
-        </section>
-      </main>
+          </Typography>
+        </Paper>
+      </Container>
     );
   }
 
   return (
-    <main className="mx-auto flex min-h-screen w-full max-w-md items-center px-4 py-12 sm:px-6">
-      <section className="panel-voxel relative w-full overflow-hidden rounded-3xl border border-emerald-400/20 bg-panel/85 p-8 shadow-neon-cube backdrop-blur-md">
-        <img
+    <Container
+      maxWidth="sm"
+      sx={{ minHeight: "100vh", display: "flex", alignItems: "center", py: 6 }}
+    >
+      <Paper
+        sx={{
+          p: { xs: 3, sm: 4 },
+          width: "100%",
+          position: "relative",
+          overflow: "hidden",
+        }}
+      >
+        <Box
+          component="img"
           src="/branding/mgu-one-logo.svg"
           alt="MGU ONE"
-          className="pointer-events-none absolute inset-0 h-full w-full object-cover opacity-10"
+          sx={{
+            position: "absolute",
+            right: -24,
+            top: -20,
+            width: 180,
+            opacity: 0.08,
+          }}
         />
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-[#050815]/85 via-[#050815]/70 to-[#050815]/85" />
 
-        <div className="relative">
-          <p className="mb-2 text-xs font-semibold uppercase tracking-[0.18em] text-emerald-200">
-            {requiresSetup ? "Initial Setup" : "Operator Access"}
-          </p>
-          <h1 className="text-rune-gradient text-3xl font-black uppercase">
+        <Stack spacing={2} sx={{ position: "relative" }}>
+          <Stack direction="row" spacing={1} alignItems="center">
+            <Shield size={16} />
+            <Typography
+              variant="overline"
+              color="text.secondary"
+              sx={{ letterSpacing: 1.2 }}
+            >
+              {requiresSetup ? "Initial Setup" : "Operator Access"}
+            </Typography>
+          </Stack>
+
+          <Typography variant="h4" color="primary.main">
             {requiresSetup ? "Create First Admin" : "Realm Ops Console"}
-          </h1>
-          <p className="mt-2 text-sm text-slate-300">
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
             {requiresSetup
               ? "No admin account exists yet. Create the first secure admin for this deployment."
               : "Sign in to launch Minecraft events, edit arena announcements, and review tournament entries."}
-          </p>
+          </Typography>
 
-          <form onSubmit={handleSubmit} className="mt-6 space-y-4">
-            <label className="block">
-              <span className="mb-1 block text-xs uppercase tracking-wider text-slate-400">
-                Username
-              </span>
-              <input
-                value={username}
-                onChange={(event) => setUsername(event.target.value)}
-                autoComplete="username"
-                className="w-full rounded-xl border border-emerald-400/20 bg-slate-900/70 px-3 py-2 text-sm text-ink outline-none transition focus:border-amber-300 focus:ring-2 focus:ring-amber-300/30"
-                required
-              />
-            </label>
+          <Stack
+            component="form"
+            spacing={2}
+            onSubmit={handleSubmit}
+            noValidate
+          >
+            <TextField
+              value={username}
+              onChange={(event) => setUsername(event.target.value)}
+              autoComplete="username"
+              label="Username"
+              required
+              fullWidth
+            />
 
-            <label className="block">
-              <span className="mb-1 block text-xs uppercase tracking-wider text-slate-400">
-                Password
-              </span>
-              <input
-                type="password"
-                value={password}
-                onChange={(event) => setPassword(event.target.value)}
-                autoComplete="current-password"
-                className="w-full rounded-xl border border-emerald-400/20 bg-slate-900/70 px-3 py-2 text-sm text-ink outline-none transition focus:border-amber-300 focus:ring-2 focus:ring-amber-300/30"
-                required
-              />
-            </label>
+            <TextField
+              type="password"
+              value={password}
+              onChange={(event) => setPassword(event.target.value)}
+              autoComplete="current-password"
+              label="Password"
+              required
+              fullWidth
+            />
 
             {requiresSetup ? (
-              <label className="block">
-                <span className="mb-1 block text-xs uppercase tracking-wider text-slate-400">
-                  Confirm Password
-                </span>
-                <input
-                  type="password"
-                  value={confirmPassword}
-                  onChange={(event) => setConfirmPassword(event.target.value)}
-                  autoComplete="new-password"
-                  className="w-full rounded-xl border border-emerald-400/20 bg-slate-900/70 px-3 py-2 text-sm text-ink outline-none transition focus:border-amber-300 focus:ring-2 focus:ring-amber-300/30"
-                  required
-                />
-              </label>
+              <TextField
+                type="password"
+                value={confirmPassword}
+                onChange={(event) => setConfirmPassword(event.target.value)}
+                autoComplete="new-password"
+                label="Confirm Password"
+                required
+                fullWidth
+              />
             ) : null}
 
-            {error ? (
-              <p className="rounded-lg border border-red-500/45 bg-red-500/12 px-3 py-2 text-xs text-red-100">
-                {error}
-              </p>
-            ) : null}
+            {error ? <Alert severity="error">{error}</Alert> : null}
+            {notice ? <Alert severity="success">{notice}</Alert> : null}
 
-            {notice ? (
-              <p className="rounded-lg border border-emerald-400/40 bg-emerald-500/10 px-3 py-2 text-xs text-emerald-100">
-                {notice}
-              </p>
-            ) : null}
-
-            <button
+            <Button
               type="submit"
               disabled={isSubmitting}
-              className="btn-prism w-full rounded-xl px-4 py-2 text-sm font-bold uppercase tracking-wider disabled:cursor-not-allowed disabled:opacity-60"
+              variant="contained"
+              fullWidth
             >
               {isSubmitting
                 ? requiresSetup
@@ -163,18 +191,21 @@ const AdminLogin = () => {
                 : requiresSetup
                   ? "Create Admin Account"
                   : "Enter Control Deck"}
-            </button>
-          </form>
+            </Button>
+          </Stack>
 
-          <Link
+          <Button
+            component={RouterLink}
             to="/"
-            className="mt-4 inline-flex text-xs font-semibold uppercase tracking-wider text-slate-400 transition hover:text-amber-200"
+            size="small"
+            color="inherit"
+            sx={{ alignSelf: "flex-start" }}
           >
             Back to event board
-          </Link>
-        </div>
-      </section>
-    </main>
+          </Button>
+        </Stack>
+      </Paper>
+    </Container>
   );
 };
 

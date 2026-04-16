@@ -1,3 +1,13 @@
+import {
+  Alert,
+  Box,
+  Button,
+  Chip,
+  Paper,
+  Stack,
+  Typography,
+} from "@mui/material";
+import { Trophy } from "lucide-react";
 import FormEngine from "./FormEngine.jsx";
 
 const mapLegacyType = (type) => {
@@ -74,98 +84,131 @@ const DynamicRenderer = ({ event }) => {
 
   if (layout.length === 0) {
     return (
-      <section className="rounded-2xl border border-emerald-400/20 bg-panel/80 p-6 text-sm text-slate-200">
+      <Paper sx={{ p: 3 }}>
         This realm is warming up. Event content will drop soon.
-      </section>
+      </Paper>
     );
   }
 
   return (
-    <div className="space-y-7 pb-12">
+    <Stack spacing={3} sx={{ pb: 6 }}>
       {showWinnerAnnouncement ? (
-        <section className="reveal rounded-2xl border border-cyan-300/45 bg-cyan-500/10 p-5 sm:p-6">
-          <h2 className="text-2xl font-black uppercase text-cyan-100">
+        <Alert
+          severity="info"
+          variant="outlined"
+          icon={<Trophy size={18} />}
+          sx={{ p: 2 }}
+        >
+          <Typography variant="h6" sx={{ mb: 1 }}>
             Winner Announcement
-          </h2>
-          <p className="mt-2 whitespace-pre-line text-sm leading-relaxed text-slate-100 sm:text-base">
+          </Typography>
+          <Typography variant="body2" sx={{ whiteSpace: "pre-line" }}>
             {winnerAnnouncement ||
               "Winners have been published by the event administration."}
-          </p>
-        </section>
+          </Typography>
+        </Alert>
       ) : null}
 
       {layout.map((rawBlock, index) => {
         try {
           const type = mapLegacyType(rawBlock?.type);
           const data = rawBlock?.data || {};
-          const delay = `${Math.min(index, 8) * 60}ms`;
 
           if (type === "HERO_EXPLOSION") {
             const heroImage = data.imageUrl || "";
             const logoUrl = data.logoUrl || "/branding/mgu-one-logo.svg";
 
             return (
-              <section
+              <Paper
                 key={`hero-explosion-${index}`}
-                className="panel-voxel reveal relative overflow-hidden rounded-3xl border border-emerald-400/20 bg-panel/90"
-                style={{ animationDelay: delay }}
+                sx={{
+                  position: "relative",
+                  overflow: "hidden",
+                  p: { xs: 2.5, sm: 4 },
+                }}
               >
                 {heroImage ? (
-                  <img
+                  <Box
+                    component="img"
                     src={heroImage}
                     alt={data.title || event.title}
-                    className="absolute inset-0 h-full w-full object-cover opacity-30"
+                    sx={{
+                      position: "absolute",
+                      inset: 0,
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "cover",
+                      opacity: 0.14,
+                    }}
                   />
                 ) : null}
-                <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_0%,rgba(245,158,11,0.28),transparent_36%),radial-gradient(circle_at_80%_100%,rgba(16,185,129,0.24),transparent_40%),linear-gradient(145deg,rgba(5,8,21,0.96),rgba(5,8,21,0.8))]" />
+                <Box
+                  sx={{
+                    position: "absolute",
+                    inset: 0,
+                    backgroundColor: "rgba(255, 255, 255, 0.8)",
+                  }}
+                />
 
-                <div className="relative px-5 py-10 sm:px-10 sm:py-14">
-                  <img
+                <Box sx={{ position: "relative" }}>
+                  <Box
+                    component="img"
                     src={logoUrl}
                     alt="MGU ONE"
-                    className="mb-4 h-16 w-auto opacity-95 sm:h-20"
+                    sx={{ height: { xs: 48, sm: 64 }, width: "auto", mb: 2 }}
                   />
 
-                  <p className="mb-3 inline-flex rounded-full border border-emerald-400/30 bg-emerald-500/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-emerald-200">
-                    Realm Broadcast
-                  </p>
-                  <h2 className="text-rune-gradient max-w-4xl text-3xl font-black uppercase leading-tight sm:text-5xl">
+                  <Chip
+                    label="Realm Broadcast"
+                    color="secondary"
+                    variant="outlined"
+                    size="small"
+                    sx={{ mb: 2 }}
+                  />
+                  <Typography
+                    variant="h3"
+                    color="primary.main"
+                    sx={{ maxWidth: 960 }}
+                  >
                     {data.title || event.title}
-                  </h2>
-                  <p className="mt-3 max-w-2xl text-sm text-slate-100 sm:text-base">
+                  </Typography>
+                  <Typography variant="body1" sx={{ mt: 1.5, maxWidth: 640 }}>
                     {data.subtitle ||
                       "Server gates are open. Rally your team and chase the crown."}
-                  </p>
+                  </Typography>
 
                   {data.ctaLabel && data.ctaHref ? (
-                    <a
+                    <Button
+                      component="a"
                       href={data.ctaHref}
-                      className="btn-prism mt-6 inline-flex rounded-xl px-4 py-2 text-sm font-bold uppercase tracking-wider"
+                      variant="contained"
+                      color="primary"
+                      sx={{ mt: 3 }}
                     >
                       {data.ctaLabel}
-                    </a>
+                    </Button>
                   ) : null}
-                </div>
-              </section>
+                </Box>
+              </Paper>
             );
           }
 
           if (type === "TEXT_GLOW_BLOCK") {
             return (
-              <section
-                key={`text-glow-${index}`}
-                className="reveal lime-glow-panel rounded-2xl border border-emerald-400/20 bg-panel/85 p-5 sm:p-6"
-                style={{ animationDelay: delay }}
-              >
+              <Paper key={`text-glow-${index}`} sx={{ p: { xs: 2, sm: 3 } }}>
                 {data.heading ? (
-                  <h2 className="text-2xl font-black uppercase text-slate-50">
+                  <Typography variant="h5" color="primary.main">
                     {data.heading}
-                  </h2>
+                  </Typography>
                 ) : null}
-                <p className="mt-2 whitespace-pre-line text-sm leading-relaxed text-slate-200 sm:text-base">
+                <Typography
+                  variant="body1"
+                  color="text.primary"
+                  sx={{ mt: 1.5, whiteSpace: "pre-line" }}
+                >
                   {data.body || ""}
-                </p>
-              </section>
+                </Typography>
+              </Paper>
             );
           }
 
@@ -173,33 +216,48 @@ const DynamicRenderer = ({ event }) => {
             const imageItems = normalizeImageGridItems(data);
 
             return (
-              <section
-                key={`image-grid-${index}`}
-                className="reveal rounded-2xl border border-emerald-400/20 bg-panel/85 p-4 sm:p-5"
-                style={{ animationDelay: delay }}
-              >
-                <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              <Paper key={`image-grid-${index}`} sx={{ p: { xs: 2, sm: 2.5 } }}>
+                <Box
+                  sx={{
+                    display: "grid",
+                    gap: 2,
+                    gridTemplateColumns: {
+                      xs: "1fr",
+                      sm: "repeat(2, minmax(0, 1fr))",
+                      lg: "repeat(3, minmax(0, 1fr))",
+                    },
+                  }}
+                >
                   {imageItems.length > 0
                     ? imageItems.map((item, imageIndex) => (
-                        <figure
+                        <Paper
                           key={`${item.url}-${imageIndex}`}
-                          className="overflow-hidden rounded-xl border border-emerald-400/20 bg-slate-900/60"
+                          sx={{ borderRadius: 2, overflow: "hidden" }}
                         >
-                          <img
+                          <Box
+                            component="img"
                             src={item.url}
                             alt={item.alt || "Event image"}
-                            className="h-44 w-full object-cover"
+                            sx={{
+                              width: "100%",
+                              height: 176,
+                              objectFit: "cover",
+                            }}
                           />
-                        </figure>
+                        </Paper>
                       ))
                     : null}
-                </div>
+                </Box>
                 {data.caption ? (
-                  <p className="mt-3 text-xs text-slate-300 sm:text-sm">
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    sx={{ mt: 1.5 }}
+                  >
                     {data.caption}
-                  </p>
+                  </Typography>
                 ) : null}
-              </section>
+              </Paper>
             );
           }
 
@@ -208,45 +266,44 @@ const DynamicRenderer = ({ event }) => {
             const isRulesBlock = type === "RULES_BLOCK";
 
             return (
-              <section
+              <Paper
                 key={`${isRulesBlock ? "rules" : "reward-tier"}-${index}`}
-                className={`reveal rounded-2xl border p-5 sm:p-6 ${
-                  isRulesBlock
-                    ? "border-cyan-300/45 bg-cyan-500/10"
-                    : "border-amber-300/45 bg-amber-500/10"
-                }`}
-                style={{ animationDelay: delay }}
+                sx={{
+                  p: { xs: 2, sm: 3 },
+                  borderColor: isRulesBlock ? "#c3d6eb" : "#d9c3a6",
+                  backgroundColor: isRulesBlock ? "#f6f9fd" : "#fcf7f1",
+                }}
               >
-                <h2
-                  className={`text-2xl font-black uppercase ${
-                    isRulesBlock ? "text-cyan-100" : "text-amber-200"
-                  }`}
-                >
+                <Typography variant="h5" color="primary.main">
                   {data.title || (isRulesBlock ? "Rules" : "Reward Tier")}
-                </h2>
+                </Typography>
                 {rewards.length > 0 ? (
-                  <ul className="mt-3 grid gap-2 text-sm text-slate-100 sm:grid-cols-2">
+                  <Box
+                    sx={{
+                      mt: 2,
+                      display: "grid",
+                      gap: 1,
+                      gridTemplateColumns: { xs: "1fr", sm: "repeat(2, 1fr)" },
+                    }}
+                  >
                     {rewards.map((item, rewardIndex) => (
-                      <li
-                        key={`${item}-${rewardIndex}`}
-                        className={`rounded-lg border bg-slate-900/55 px-3 py-2 ${
-                          isRulesBlock
-                            ? "border-cyan-300/35"
-                            : "border-amber-300/35"
-                        }`}
-                      >
-                        {item}
-                      </li>
+                      <Paper key={`${item}-${rewardIndex}`} sx={{ p: 1.5 }}>
+                        <Typography variant="body2">{item}</Typography>
+                      </Paper>
                     ))}
-                  </ul>
+                  </Box>
                 ) : (
-                  <p className="mt-2 text-sm text-slate-200">
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    sx={{ mt: 1.5 }}
+                  >
                     {isRulesBlock
                       ? "Rulebook will be published before launch."
                       : "Loot table will be revealed before launch."}
-                  </p>
+                  </Typography>
                 )}
-              </section>
+              </Paper>
             );
           }
 
@@ -259,25 +316,21 @@ const DynamicRenderer = ({ event }) => {
 
             if (!linkedForm) {
               return (
-                <section
+                <Alert
                   key={`dynamic-form-missing-${index}`}
-                  className="reveal rounded-2xl border border-red-500/45 bg-red-500/10 p-5 text-sm text-red-100"
-                  style={{ animationDelay: delay }}
+                  severity="error"
+                  variant="outlined"
                 >
                   DYNAMIC_FORM block references missing form id:{" "}
                   {String(data.formId || "")}
-                </section>
+                </Alert>
               );
             }
 
             return (
-              <div
-                key={`dynamic-form-${linkedForm.id}-${index}`}
-                className="reveal"
-                style={{ animationDelay: delay }}
-              >
+              <Box key={`dynamic-form-${linkedForm.id}-${index}`}>
                 <FormEngine eventSlug={event.slug} form={linkedForm} />
-              </div>
+              </Box>
             );
           }
 
@@ -286,16 +339,17 @@ const DynamicRenderer = ({ event }) => {
           console.error("Failed to render layout block", renderError, rawBlock);
 
           return (
-            <section
+            <Alert
               key={`layout-render-error-${index}`}
-              className="reveal rounded-2xl border border-red-500/45 bg-red-500/10 p-5 text-sm text-red-100"
+              severity="error"
+              variant="outlined"
             >
               A layout section could not be rendered due to invalid block data.
-            </section>
+            </Alert>
           );
         }
       })}
-    </div>
+    </Stack>
   );
 };
 

@@ -1,5 +1,13 @@
 import { IKContext, IKUpload } from "imagekitio-react";
 import { useMemo, useState } from "react";
+import {
+  Alert,
+  Box,
+  CircularProgress,
+  Paper,
+  Stack,
+  Typography,
+} from "@mui/material";
 import { api } from "../../lib/api.js";
 
 const IMAGEKIT_PUBLIC_KEY = import.meta.env.VITE_IMAGEKIT_PUBLIC_KEY || "";
@@ -29,81 +37,102 @@ const AdminImageUpload = ({
 
   if (!IMAGEKIT_PUBLIC_KEY || !IMAGEKIT_URL_ENDPOINT) {
     return (
-      <div className="rounded-lg border border-amber-400/40 bg-amber-500/10 px-3 py-2 text-xs text-amber-100">
+      <Alert severity="warning" variant="outlined">
         Missing ImageKit public configuration on frontend.
-      </div>
+      </Alert>
     );
   }
 
   return (
-    <div className="space-y-2">
+    <Stack spacing={1.5}>
       <IKContext
         publicKey={IMAGEKIT_PUBLIC_KEY}
         urlEndpoint={IMAGEKIT_URL_ENDPOINT}
         authenticator={authenticator}
       >
-        <IKUpload
-          folder={folder}
-          useUniqueFileName
-          fileName={`admin-upload-${Date.now()}`}
-          accept="image/png,image/jpeg,image/webp,image/gif"
-          validateFile={(file) => {
-            const allowed = [
-              "image/png",
-              "image/jpeg",
-              "image/webp",
-              "image/gif",
-            ];
+        <Paper sx={{ p: 1.5 }}>
+          <Typography
+            variant="caption"
+            color="text.secondary"
+            sx={{ mb: 1, display: "block" }}
+          >
+            {label}
+          </Typography>
+          <IKUpload
+            folder={folder}
+            useUniqueFileName
+            fileName={`admin-upload-${Date.now()}`}
+            accept="image/png,image/jpeg,image/webp,image/gif"
+            validateFile={(file) => {
+              const allowed = [
+                "image/png",
+                "image/jpeg",
+                "image/webp",
+                "image/gif",
+              ];
 
-            if (!allowed.includes(file.type)) {
-              setUploadError(
-                "Only PNG, JPG, WEBP, and GIF images are allowed.",
-              );
-              return false;
-            }
+              if (!allowed.includes(file.type)) {
+                setUploadError(
+                  "Only PNG, JPG, WEBP, and GIF images are allowed.",
+                );
+                return false;
+              }
 
-            if (file.size > maxFileMb * 1024 * 1024) {
-              setUploadError(`File must be under ${maxFileMb} MB.`);
-              return false;
-            }
+              if (file.size > maxFileMb * 1024 * 1024) {
+                setUploadError(`File must be under ${maxFileMb} MB.`);
+                return false;
+              }
 
-            return true;
-          }}
-          className="w-full rounded-lg border border-emerald-400/20 bg-slate-900/70 p-2 text-xs text-slate-200 file:mr-3 file:rounded-md file:border-0 file:bg-amber-300 file:px-3 file:py-1 file:text-xs file:font-bold file:text-slate-950"
-          onError={(error) => {
-            setUploading(false);
-            setUploadError(error?.message || "Image upload failed.");
-          }}
-          onUploadStart={() => {
-            setUploadError("");
-            setUploading(true);
-          }}
-          onSuccess={(response) => {
-            setUploading(false);
-            setUploadError("");
-            onChange(response.url || "");
-          }}
-        />
+              return true;
+            }}
+            className="ik-upload-input"
+            onError={(error) => {
+              setUploading(false);
+              setUploadError(error?.message || "Image upload failed.");
+            }}
+            onUploadStart={() => {
+              setUploadError("");
+              setUploading(true);
+            }}
+            onSuccess={(response) => {
+              setUploading(false);
+              setUploadError("");
+              onChange(response.url || "");
+            }}
+          />
+        </Paper>
       </IKContext>
 
       {uploading ? (
-        <p className="text-xs text-amber-200">{label}: uploading...</p>
+        <Stack direction="row" alignItems="center" spacing={1}>
+          <CircularProgress size={14} />
+          <Typography variant="caption">{label}: uploading...</Typography>
+        </Stack>
       ) : null}
 
       {uploadError ? (
-        <p className="text-xs text-red-300">{uploadError}</p>
+        <Alert severity="error" variant="outlined">
+          {uploadError}
+        </Alert>
       ) : null}
 
       {value ? (
-        <div className="overflow-hidden rounded-lg border border-emerald-400/20">
+        <Box
+          sx={{
+            border: "1px solid",
+            borderColor: "divider",
+            borderRadius: 1,
+            overflow: "hidden",
+          }}
+        >
           <img
             src={value}
             alt="Uploaded preview"
-            className="h-28 w-full object-cover"
+            style={{ height: 112, width: "100%", objectFit: "cover" }}
           />
-        </div>
+        </Box>
       ) : null}
-    </div>
+    </Stack>
   );
 };
 

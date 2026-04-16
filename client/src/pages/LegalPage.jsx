@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { Button, Container, Paper, Stack, Typography } from "@mui/material";
 
 const sections = [
   {
@@ -43,49 +44,60 @@ const LegalPage = () => {
   const lastUpdated = new Date().toLocaleDateString();
 
   return (
-    <main className="mx-auto min-h-screen w-full max-w-5xl px-4 py-10 sm:px-6 lg:px-8">
-      <section className="panel-voxel rounded-3xl border border-emerald-400/20 p-6 sm:p-8">
-        <p className="text-xs uppercase tracking-[0.2em] text-emerald-200">
+    <Container maxWidth="md" sx={{ py: 5 }}>
+      <Paper sx={{ p: { xs: 2.5, sm: 4 } }}>
+        <Typography
+          variant="overline"
+          color="text.secondary"
+          sx={{ letterSpacing: 1.2 }}
+        >
           Legal & Compliance
-        </p>
-        <h1 className="text-rune-gradient mt-2 text-4xl font-black uppercase">
+        </Typography>
+        <Typography variant="h3" color="primary.main" sx={{ mt: 1 }}>
           MGU.ONE Policies
-        </h1>
-        <p className="mt-3 max-w-3xl text-sm leading-relaxed text-slate-200">
+        </Typography>
+        <Typography variant="body1" color="text.secondary" sx={{ mt: 1.5 }}>
           This page outlines platform terms, privacy principles, cookie usage,
           and acceptable use requirements for MGU.ONE Events.
-        </p>
-        <p className="mt-2 text-xs text-slate-400">
+        </Typography>
+        <Typography
+          variant="caption"
+          color="text.secondary"
+          sx={{ mt: 1, display: "block" }}
+        >
           Last updated: {lastUpdated}
-        </p>
-      </section>
+        </Typography>
+      </Paper>
 
-      <div className="mt-6 space-y-4">
+      <Stack spacing={2} sx={{ mt: 3 }}>
         {sections.map((section) => (
-          <article
+          <Paper
             id={section.id}
             key={section.id}
-            className="rounded-2xl border border-emerald-400/15 bg-panel/80 p-5"
+            sx={{ p: { xs: 2, sm: 2.5 } }}
           >
-            <h2 className="text-2xl font-black uppercase text-amber-200">
+            <Typography variant="h5" color="primary.main">
               {section.title}
-            </h2>
-            <div className="mt-3 space-y-3 text-sm leading-relaxed text-slate-200">
+            </Typography>
+            <Stack spacing={1.5} sx={{ mt: 1.5 }}>
               {section.body.map((paragraph) => (
-                <p key={paragraph}>{paragraph}</p>
+                <Typography
+                  key={paragraph}
+                  variant="body2"
+                  color="text.secondary"
+                >
+                  {paragraph}
+                </Typography>
               ))}
-            </div>
-          </article>
+            </Stack>
+          </Paper>
         ))}
-      </div>
+      </Stack>
 
-      <Link
-        to="/"
-        className="btn-prism mt-8 inline-flex rounded-xl px-4 py-2 text-xs font-semibold uppercase tracking-wider"
-      >
+      <Button component={Link} to="/" variant="contained" sx={{ mt: 3 }}>
         Back to Events
-      </Link>
-    </main>
+      </Button>
+    </Container>
   );
 };
 
