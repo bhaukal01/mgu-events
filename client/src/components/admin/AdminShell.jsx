@@ -1,5 +1,14 @@
-import { NavLink, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useState } from "react";
+import {
+  Box,
+  Button,
+  Container,
+  Paper,
+  Stack,
+  Typography,
+} from "@mui/material";
+import { LogOut } from "lucide-react";
 import { api } from "../../lib/api.js";
 
 const navItems = [
@@ -10,6 +19,7 @@ const navItems = [
 
 const AdminShell = ({ title, subtitle, actions, children }) => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [loggingOut, setLoggingOut] = useState(false);
 
   const handleLogout = async () => {
@@ -25,53 +35,75 @@ const AdminShell = ({ title, subtitle, actions, children }) => {
   };
 
   return (
-    <main className="mx-auto min-h-screen w-full max-w-[1500px] px-4 py-6 sm:px-6 lg:px-8">
-      <header className="panel-voxel mb-4 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-emerald-400/25 bg-panel/85 p-4 shadow-neon-cube">
-        <div>
-          <p className="text-xs uppercase tracking-wider text-emerald-200">
-            MGU Realm Ops
-          </p>
-          <h1 className="text-rune-gradient text-2xl font-black uppercase">
-            {title}
-          </h1>
-          {subtitle ? (
-            <p className="mt-1 text-xs text-slate-300">{subtitle}</p>
-          ) : null}
-        </div>
+    <Container maxWidth="xl" sx={{ py: 4 }}>
+      <Paper sx={{ mb: 2, p: 3, bgcolor: "#edf3f9" }}>
+        <Stack
+          direction={{ xs: "column", lg: "row" }}
+          spacing={2}
+          justifyContent="space-between"
+          alignItems={{ xs: "flex-start", lg: "center" }}
+        >
+          <Box>
+            <Typography
+              variant="overline"
+              sx={{ color: "text.secondary", letterSpacing: 1.4 }}
+            >
+              MGU Realm Operations
+            </Typography>
+            <Typography variant="h4" color="primary.main">
+              {title}
+            </Typography>
+            {subtitle ? (
+              <Typography
+                variant="body2"
+                color="text.secondary"
+                sx={{ mt: 0.5 }}
+              >
+                {subtitle}
+              </Typography>
+            ) : null}
+          </Box>
 
-        <div className="flex flex-wrap items-center gap-2">
-          {actions}
-          <button
-            type="button"
-            onClick={handleLogout}
-            disabled={loggingOut}
-            className="rounded-lg border border-red-500/45 bg-red-500/10 px-3 py-2 text-xs font-semibold uppercase tracking-wider text-red-200 disabled:opacity-60"
-          >
-            {loggingOut ? "Logging out..." : "Logout"}
-          </button>
-        </div>
-      </header>
+          <Stack direction="row" spacing={1} useFlexGap flexWrap="wrap">
+            {actions}
+            <Button
+              type="button"
+              onClick={handleLogout}
+              disabled={loggingOut}
+              color="error"
+              variant="outlined"
+              startIcon={<LogOut size={16} />}
+            >
+              {loggingOut ? "Logging out..." : "Logout"}
+            </Button>
+          </Stack>
+        </Stack>
+      </Paper>
 
-      <nav className="mb-6 flex flex-wrap gap-2 rounded-xl border border-emerald-400/20 bg-panel/75 p-2">
-        {navItems.map((item) => (
-          <NavLink
-            key={item.to}
-            to={item.to}
-            className={({ isActive }) =>
-              `interactive-chip rounded-lg border px-3 py-2 text-xs font-semibold uppercase tracking-wider ${
-                isActive
-                  ? "is-active border-amber-300/70 bg-amber-500/15 text-amber-100"
-                  : "border-emerald-400/20 bg-slate-900/55 text-slate-300"
-              }`
-            }
-          >
-            {item.label}
-          </NavLink>
-        ))}
-      </nav>
+      <Paper sx={{ mb: 3, p: 1.5, bgcolor: "#eef6ea" }}>
+        <Stack direction="row" spacing={1} useFlexGap flexWrap="wrap">
+          {navItems.map((item) => {
+            const isActive = location.pathname === item.to;
+
+            return (
+              <Button
+                key={item.to}
+                type="button"
+                onClick={() => navigate(item.to)}
+                variant={isActive ? "contained" : "outlined"}
+                color={isActive ? "secondary" : "primary"}
+                size="small"
+                sx={{ minWidth: 148 }}
+              >
+                {item.label}
+              </Button>
+            );
+          })}
+        </Stack>
+      </Paper>
 
       {children}
-    </main>
+    </Container>
   );
 };
 

@@ -2,6 +2,17 @@ import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import {
+  Alert,
+  Box,
+  Button,
+  Chip,
+  MenuItem,
+  Paper,
+  Stack,
+  TextField,
+  Typography,
+} from "@mui/material";
 import { api } from "../lib/api.js";
 import ImageKitUpload from "./ImageKitUpload.jsx";
 
@@ -203,27 +214,35 @@ const FormEngine = ({ eventSlug, form }) => {
   };
 
   return (
-    <section className="panel-voxel rounded-2xl border border-emerald-400/25 bg-panel/85 p-5 shadow-neon-cube sm:p-6">
-      <h3 className="text-rune-gradient text-2xl font-black uppercase">
+    <Paper sx={{ p: { xs: 2, sm: 3 } }}>
+      <Typography variant="h5" color="primary.main">
         {form?.title || "Registration Form"}
-      </h3>
+      </Typography>
       {form?.description ? (
-        <p className="mt-1 text-sm text-slate-300">{form.description}</p>
+        <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+          {form.description}
+        </Typography>
       ) : null}
 
-      <p className="mt-2 text-xs uppercase tracking-[0.18em] text-emerald-200/90">
+      <Typography
+        variant="overline"
+        color="secondary.main"
+        sx={{ mt: 1, display: "block", letterSpacing: 1.2 }}
+      >
         {getFormPurposeLeadText(form)}
-      </p>
+      </Typography>
 
-      <form
-        className="mt-5 space-y-4"
+      <Stack
+        component="form"
+        spacing={2}
+        sx={{ mt: 3 }}
         onSubmit={handleSubmit(onSubmit)}
         noValidate
       >
         <input
           tabIndex={-1}
           autoComplete="off"
-          className="hidden"
+          style={{ display: "none" }}
           {...register("__website")}
         />
 
@@ -237,22 +256,17 @@ const FormEngine = ({ eventSlug, form }) => {
 
           if (field.type === "long_text") {
             return (
-              <label key={field.name} className="block">
-                <span className="mb-1 block text-sm font-semibold text-slate-200">
-                  {field.label}
-                </span>
-                <textarea
-                  rows={4}
-                  placeholder={field.placeholder || "Enter your response"}
-                  className="w-full rounded-xl border border-emerald-400/20 bg-slate-900/70 px-3 py-2 text-sm text-ink outline-none transition focus:border-amber-300 focus:ring-2 focus:ring-amber-300/30"
-                  {...register(field.name)}
-                />
-                {fieldError ? (
-                  <span className="mt-1 block text-xs text-red-300">
-                    {fieldError}
-                  </span>
-                ) : null}
-              </label>
+              <TextField
+                key={field.name}
+                label={field.label}
+                placeholder={field.placeholder || "Enter your response"}
+                multiline
+                rows={4}
+                fullWidth
+                {...register(field.name)}
+                error={Boolean(fieldError)}
+                helperText={fieldError ? String(fieldError) : " "}
+              />
             );
           }
 
@@ -260,10 +274,14 @@ const FormEngine = ({ eventSlug, form }) => {
             const imageValue = watch(field.name);
 
             return (
-              <div key={field.name}>
-                <label className="mb-1 block text-sm font-semibold text-slate-200">
+              <Box key={field.name}>
+                <Typography
+                  variant="subtitle2"
+                  color="text.primary"
+                  sx={{ mb: 1 }}
+                >
                   {field.label}
-                </label>
+                </Typography>
                 <input type="hidden" {...register(field.name)} />
                 <ImageKitUpload
                   label={field.label}
@@ -279,37 +297,37 @@ const FormEngine = ({ eventSlug, form }) => {
                   }
                 />
                 {fieldError ? (
-                  <span className="mt-1 block text-xs text-red-300">
+                  <Typography
+                    variant="caption"
+                    color="error.main"
+                    sx={{ mt: 0.5, display: "block" }}
+                  >
                     {fieldError}
-                  </span>
+                  </Typography>
                 ) : null}
-              </div>
+              </Box>
             );
           }
 
           if (field.type === "dropdown") {
             return (
-              <label key={field.name} className="block">
-                <span className="mb-1 block text-sm font-semibold text-slate-200">
-                  {field.label}
-                </span>
-                <select
-                  className="w-full rounded-xl border border-emerald-400/20 bg-slate-900/70 px-3 py-2 text-sm text-ink outline-none transition focus:border-amber-300 focus:ring-2 focus:ring-amber-300/30"
-                  {...register(field.name)}
-                >
-                  <option value="">Select an option</option>
-                  {fieldOptions.map((option) => (
-                    <option key={option} value={option}>
-                      {option}
-                    </option>
-                  ))}
-                </select>
-                {fieldError ? (
-                  <span className="mt-1 block text-xs text-red-300">
-                    {fieldError}
-                  </span>
-                ) : null}
-              </label>
+              <TextField
+                key={field.name}
+                select
+                label={field.label}
+                fullWidth
+                defaultValue=""
+                {...register(field.name)}
+                error={Boolean(fieldError)}
+                helperText={fieldError ? String(fieldError) : " "}
+              >
+                <MenuItem value="">Select an option</MenuItem>
+                {fieldOptions.map((option) => (
+                  <MenuItem key={option} value={option}>
+                    {option}
+                  </MenuItem>
+                ))}
+              </TextField>
             );
           }
 
@@ -317,82 +335,83 @@ const FormEngine = ({ eventSlug, form }) => {
             const selectedValue = watch(field.name);
 
             return (
-              <div key={field.name}>
-                <span className="mb-1 block text-sm font-semibold text-slate-200">
+              <Box key={field.name}>
+                <Typography
+                  variant="subtitle2"
+                  color="text.primary"
+                  sx={{ mb: 1 }}
+                >
                   {field.label}
-                </span>
+                </Typography>
                 <input type="hidden" {...register(field.name)} />
-                <div className="flex flex-wrap gap-2">
+                <Stack direction="row" spacing={1} useFlexGap flexWrap="wrap">
                   {fieldOptions.map((option) => (
-                    <button
+                    <Chip
                       key={option}
-                      type="button"
+                      label={option}
                       onClick={() =>
                         setValue(field.name, option, {
                           shouldValidate: true,
                           shouldDirty: true,
                         })
                       }
-                      className={`interactive-chip rounded-lg border px-3 py-2 text-xs font-semibold uppercase tracking-wider ${
-                        selectedValue === option
-                          ? "is-active border-amber-300/70 bg-amber-500/20 text-amber-100"
-                          : "border-emerald-400/20 bg-slate-900/65 text-slate-300"
-                      }`}
-                    >
-                      {option}
-                    </button>
+                      color={selectedValue === option ? "secondary" : "default"}
+                      variant={selectedValue === option ? "filled" : "outlined"}
+                      clickable
+                      sx={{ borderRadius: 0 }}
+                    />
                   ))}
-                </div>
+                </Stack>
                 {fieldError ? (
-                  <span className="mt-1 block text-xs text-red-300">
+                  <Typography
+                    variant="caption"
+                    color="error.main"
+                    sx={{ mt: 0.5, display: "block" }}
+                  >
                     {fieldError}
-                  </span>
+                  </Typography>
                 ) : null}
-              </div>
+              </Box>
             );
           }
 
           return (
-            <label key={field.name} className="block">
-              <span className="mb-1 block text-sm font-semibold text-slate-200">
-                {field.label}
-              </span>
-              <input
-                type="text"
-                placeholder={field.placeholder || "Enter value"}
-                className="w-full rounded-xl border border-emerald-400/20 bg-slate-900/70 px-3 py-2 text-sm text-ink outline-none transition focus:border-amber-300 focus:ring-2 focus:ring-amber-300/30"
-                {...register(field.name)}
-              />
-              {fieldError ? (
-                <span className="mt-1 block text-xs text-red-300">
-                  {fieldError}
-                </span>
-              ) : null}
-            </label>
+            <TextField
+              key={field.name}
+              type="text"
+              label={field.label}
+              placeholder={field.placeholder || "Enter value"}
+              fullWidth
+              {...register(field.name)}
+              error={Boolean(fieldError)}
+              helperText={fieldError ? String(fieldError) : " "}
+            />
           );
         })}
 
         {submitError ? (
-          <p className="rounded-lg border border-red-500/45 bg-red-500/12 px-3 py-2 text-xs text-red-100">
+          <Alert severity="error" variant="outlined">
             {submitError}
-          </p>
+          </Alert>
         ) : null}
 
         {submitSuccess ? (
-          <p className="rounded-lg border border-emerald-400/45 bg-emerald-500/10 px-3 py-2 text-xs text-emerald-100">
+          <Alert severity="success" variant="outlined">
             {submitSuccess}
-          </p>
+          </Alert>
         ) : null}
 
-        <button
+        <Button
           type="submit"
           disabled={isSubmitting}
-          className="btn-prism inline-flex rounded-xl px-4 py-2 text-sm font-bold uppercase tracking-wider disabled:cursor-not-allowed disabled:opacity-60"
+          variant="contained"
+          color="primary"
+          sx={{ alignSelf: "flex-start" }}
         >
           {isSubmitting ? "Submitting..." : form?.submitLabel || "Submit"}
-        </button>
-      </form>
-    </section>
+        </Button>
+      </Stack>
+    </Paper>
   );
 };
 

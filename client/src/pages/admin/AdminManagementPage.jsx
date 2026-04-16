@@ -1,4 +1,16 @@
 import { useEffect, useState } from "react";
+import {
+  Alert,
+  Box,
+  Button,
+  Chip,
+  Grid,
+  Paper,
+  Skeleton,
+  Stack,
+  TextField,
+  Typography,
+} from "@mui/material";
 import { api } from "../../lib/api.js";
 import AdminShell from "../../components/admin/AdminShell.jsx";
 
@@ -146,168 +158,206 @@ const AdminManagementPage = () => {
       title="Admin Management"
       subtitle="Create admins, remove old accounts, and manage your own password."
     >
-      <article className="rounded-2xl border border-emerald-400/20 bg-panel/80 p-4 sm:p-5">
-        <h2 className="text-lg font-black uppercase text-ink">
-          Create New Admin
-        </h2>
-        <p className="mt-1 text-xs text-slate-400">
-          New credentials are securely stored in MongoDB.
-        </p>
+      {adminNotice ? (
+        <Alert severity="success" sx={{ mb: 2 }}>
+          {adminNotice}
+        </Alert>
+      ) : null}
 
-        <form
+      {adminError ? (
+        <Alert severity="error" sx={{ mb: 2 }}>
+          {adminError}
+        </Alert>
+      ) : null}
+
+      <Paper sx={{ p: { xs: 2, sm: 3 } }}>
+        <Typography variant="h6" color="primary.main">
+          Create New Admin
+        </Typography>
+        <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+          New credentials are securely stored in MongoDB.
+        </Typography>
+
+        <Stack
+          component="form"
           onSubmit={createAdminAccount}
-          className="mt-4 grid gap-3 sm:grid-cols-[1fr_1fr_auto]"
+          direction={{ xs: "column", md: "row" }}
+          spacing={1.5}
+          sx={{ mt: 2 }}
         >
-          <input
+          <TextField
             value={newAdminUsername}
             onChange={(event) => setNewAdminUsername(event.target.value)}
-            placeholder="new admin username"
+            placeholder="New admin username"
             autoComplete="off"
-            className="w-full rounded-lg border border-emerald-400/20 bg-slate-900/65 px-3 py-2 text-sm text-ink outline-none transition focus:border-amber-300"
+            size="small"
+            fullWidth
             required
           />
-          <input
+          <TextField
             type="password"
             value={newAdminPassword}
             onChange={(event) => setNewAdminPassword(event.target.value)}
-            placeholder="temporary password"
+            placeholder="Temporary password"
             autoComplete="new-password"
-            className="w-full rounded-lg border border-emerald-400/20 bg-slate-900/65 px-3 py-2 text-sm text-ink outline-none transition focus:border-amber-300"
+            size="small"
+            fullWidth
             required
           />
-          <button
+          <Button
             type="submit"
             disabled={creatingAdmin}
-            className="btn-prism rounded-lg px-4 py-2 text-xs font-bold uppercase tracking-wider disabled:cursor-not-allowed disabled:opacity-60"
+            variant="contained"
+            sx={{ minWidth: 130 }}
           >
             {creatingAdmin ? "Saving..." : "Add Admin"}
-          </button>
-        </form>
+          </Button>
+        </Stack>
+      </Paper>
 
-        {adminNotice ? (
-          <p className="mt-3 rounded-xl border border-emerald-400/40 bg-emerald-500/10 px-3 py-2 text-xs text-emerald-100">
-            {adminNotice}
-          </p>
-        ) : null}
-
-        {adminError ? (
-          <p className="mt-3 rounded-xl border border-red-500/45 bg-red-500/12 px-3 py-2 text-xs text-red-100">
-            {adminError}
-          </p>
-        ) : null}
-      </article>
-
-      <article className="mt-6 rounded-2xl border border-emerald-400/20 bg-panel/80 p-4 sm:p-5">
-        <h2 className="text-lg font-black uppercase text-ink">My Security</h2>
-        <p className="mt-1 text-xs text-slate-400">
+      <Paper sx={{ p: { xs: 2, sm: 3 }, mt: 2 }}>
+        <Typography variant="h6" color="primary.main">
+          My Security
+        </Typography>
+        <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
           Signed in as {currentAdmin?.username || "current admin"}. Update your
           own password from here.
-        </p>
+        </Typography>
 
-        <form
+        <Grid
+          component="form"
+          container
+          spacing={1.5}
           onSubmit={changeOwnPassword}
-          className="mt-4 grid gap-3 sm:grid-cols-3"
+          sx={{ mt: 1 }}
         >
-          <input
-            type="password"
-            value={currentPassword}
-            onChange={(event) => setCurrentPassword(event.target.value)}
-            placeholder="current password"
-            autoComplete="current-password"
-            className="w-full rounded-lg border border-emerald-400/20 bg-slate-900/65 px-3 py-2 text-sm text-ink outline-none transition focus:border-amber-300"
-            required
-          />
-          <input
-            type="password"
-            value={nextPassword}
-            onChange={(event) => setNextPassword(event.target.value)}
-            placeholder="new password"
-            autoComplete="new-password"
-            className="w-full rounded-lg border border-emerald-400/20 bg-slate-900/65 px-3 py-2 text-sm text-ink outline-none transition focus:border-amber-300"
-            required
-          />
-          <input
-            type="password"
-            value={confirmNextPassword}
-            onChange={(event) => setConfirmNextPassword(event.target.value)}
-            placeholder="confirm new password"
-            autoComplete="new-password"
-            className="w-full rounded-lg border border-emerald-400/20 bg-slate-900/65 px-3 py-2 text-sm text-ink outline-none transition focus:border-amber-300"
-            required
-          />
-          <button
-            type="submit"
-            disabled={changingPassword}
-            className="btn-prism rounded-lg px-4 py-2 text-xs font-bold uppercase tracking-wider disabled:cursor-not-allowed disabled:opacity-60 sm:col-span-3 sm:w-max"
-          >
-            {changingPassword ? "Updating..." : "Change My Password"}
-          </button>
-        </form>
-      </article>
+          <Grid size={{ xs: 12, sm: 4 }}>
+            <TextField
+              type="password"
+              value={currentPassword}
+              onChange={(event) => setCurrentPassword(event.target.value)}
+              placeholder="Current password"
+              autoComplete="current-password"
+              size="small"
+              fullWidth
+              required
+            />
+          </Grid>
+          <Grid size={{ xs: 12, sm: 4 }}>
+            <TextField
+              type="password"
+              value={nextPassword}
+              onChange={(event) => setNextPassword(event.target.value)}
+              placeholder="New password"
+              autoComplete="new-password"
+              size="small"
+              fullWidth
+              required
+            />
+          </Grid>
+          <Grid size={{ xs: 12, sm: 4 }}>
+            <TextField
+              type="password"
+              value={confirmNextPassword}
+              onChange={(event) => setConfirmNextPassword(event.target.value)}
+              placeholder="Confirm new password"
+              autoComplete="new-password"
+              size="small"
+              fullWidth
+              required
+            />
+          </Grid>
+          <Grid size={12}>
+            <Button
+              type="submit"
+              disabled={changingPassword}
+              variant="contained"
+            >
+              {changingPassword ? "Updating..." : "Change My Password"}
+            </Button>
+          </Grid>
+        </Grid>
+      </Paper>
 
-      <article className="mt-6 rounded-2xl border border-emerald-400/20 bg-panel/80 p-4 sm:p-5">
-        <div className="flex items-center justify-between gap-3">
-          <h2 className="text-lg font-black uppercase text-ink">
+      <Paper sx={{ p: { xs: 2, sm: 3 }, mt: 2 }}>
+        <Stack
+          direction="row"
+          justifyContent="space-between"
+          spacing={1.5}
+          alignItems="center"
+        >
+          <Typography variant="h6" color="primary.main">
             Active Admin Accounts
-          </h2>
-          <span className="rounded-full border border-amber-300/45 bg-amber-500/10 px-2 py-1 text-[11px] font-semibold uppercase tracking-wider text-amber-100">
-            Role model: admin only
-          </span>
-        </div>
+          </Typography>
+          <Chip
+            label="Role model: admin only"
+            size="small"
+            variant="outlined"
+          />
+        </Stack>
 
         {loadingAdmins ? (
-          <div className="mt-4 h-12 animate-pulse rounded-lg bg-slate-900/70" />
+          <Skeleton
+            variant="rectangular"
+            height={64}
+            sx={{ borderRadius: 0, mt: 2 }}
+          />
         ) : null}
 
         {!loadingAdmins && admins.length === 0 ? (
-          <p className="mt-4 text-sm text-slate-400">
+          <Typography variant="body2" color="text.secondary" sx={{ mt: 2 }}>
             No admin accounts found.
-          </p>
+          </Typography>
         ) : null}
 
         {!loadingAdmins && admins.length > 0 ? (
-          <div className="mt-4 grid gap-2 sm:grid-cols-2">
+          <Grid container spacing={1.5} sx={{ mt: 0.5 }}>
             {admins.map((admin) => {
               const isSelf =
                 String(currentAdmin?.id || "") === String(admin.id);
               const isDeleting = deletingAdminId === admin.id;
 
               return (
-                <div
-                  key={admin.id}
-                  className="rounded-xl border border-emerald-400/20 bg-slate-900/45 p-3"
-                >
-                  <div className="flex items-center justify-between gap-2">
-                    <div>
-                      <p className="text-sm font-bold text-ink">
-                        {admin.username}
-                      </p>
-                      <p className="mt-1 text-[11px] uppercase tracking-wider text-slate-400">
-                        {admin.role} {isSelf ? "• You" : ""}
-                      </p>
-                    </div>
-
-                    <button
-                      type="button"
-                      onClick={() => deleteAdminAccount(admin)}
-                      disabled={
-                        isSelf || isDeleting || Boolean(deletingAdminId)
-                      }
-                      className="rounded border border-red-500/40 bg-red-500/10 px-2 py-1 text-[11px] font-semibold uppercase tracking-wider text-red-200 disabled:opacity-50"
+                <Grid key={admin.id} size={{ xs: 12, md: 6 }}>
+                  <Paper variant="outlined" sx={{ p: 2 }}>
+                    <Stack
+                      direction="row"
+                      justifyContent="space-between"
+                      spacing={1}
                     >
-                      {isSelf
-                        ? "Current"
-                        : isDeleting
-                          ? "Deleting..."
-                          : "Delete"}
-                    </button>
-                  </div>
-                </div>
+                      <Box>
+                        <Typography variant="subtitle2" color="primary.main">
+                          {admin.username}
+                        </Typography>
+                        <Typography variant="caption" color="text.secondary">
+                          {admin.role} {isSelf ? "• You" : ""}
+                        </Typography>
+                      </Box>
+
+                      <Button
+                        type="button"
+                        onClick={() => deleteAdminAccount(admin)}
+                        disabled={
+                          isSelf || isDeleting || Boolean(deletingAdminId)
+                        }
+                        color="error"
+                        variant="outlined"
+                        size="small"
+                      >
+                        {isSelf
+                          ? "Current"
+                          : isDeleting
+                            ? "Deleting..."
+                            : "Delete"}
+                      </Button>
+                    </Stack>
+                  </Paper>
+                </Grid>
               );
             })}
-          </div>
+          </Grid>
         ) : null}
-      </article>
+      </Paper>
     </AdminShell>
   );
 };

@@ -1,4 +1,18 @@
 import { useEffect, useMemo, useState } from "react";
+import {
+  Alert,
+  Box,
+  Button,
+  Grid,
+  MenuItem,
+  Paper,
+  Skeleton,
+  Stack,
+  Switch,
+  TextField,
+  Typography,
+} from "@mui/material";
+import { ArrowDown, ArrowUp, Download, Plus, Trash2 } from "lucide-react";
 import { api } from "../../lib/api.js";
 import AdminShell from "../../components/admin/AdminShell.jsx";
 
@@ -324,250 +338,291 @@ const FormBuilderPage = () => {
       subtitle="Build standalone forms and export form submissions as CSV."
       actions={
         <>
-          <button
+          <Button
             type="button"
             onClick={createNewForm}
-            className="rounded-lg border border-emerald-400/20 bg-slate-900/70 px-3 py-2 text-xs font-semibold uppercase tracking-wider text-slate-300"
+            variant="outlined"
+            startIcon={<Plus size={16} />}
           >
             New Form
-          </button>
-          <button
+          </Button>
+          <Button
             type="button"
             onClick={saveForm}
             disabled={savingForm}
-            className="btn-prism rounded-lg px-3 py-2 text-xs font-bold uppercase tracking-wider disabled:cursor-not-allowed disabled:opacity-60"
+            variant="contained"
+            color="primary"
           >
             {savingForm ? "Saving..." : "Save Form"}
-          </button>
-          <button
+          </Button>
+          <Button
             type="button"
             onClick={deleteForm}
             disabled={!activeFormId || deletingForm || savingForm}
-            className="rounded-lg border border-red-500/45 bg-red-500/10 px-3 py-2 text-xs font-semibold uppercase tracking-wider text-red-200 disabled:opacity-55"
+            color="error"
+            variant="outlined"
+            startIcon={<Trash2 size={16} />}
           >
             {deletingForm ? "Deleting..." : "Delete Form"}
-          </button>
-          <button
+          </Button>
+          <Button
             type="button"
             onClick={downloadCsv}
             disabled={!activeFormId || downloading || deletingForm}
-            className="rounded-lg border border-amber-300/45 bg-amber-500/10 px-3 py-2 text-xs font-semibold uppercase tracking-wider text-amber-100 disabled:opacity-60"
+            color="secondary"
+            variant="outlined"
+            startIcon={<Download size={16} />}
           >
             {downloading ? "Downloading..." : "Download CSV"}
-          </button>
+          </Button>
         </>
       }
     >
       {notice ? (
-        <p className="mb-4 rounded-xl border border-cyan-400/40 bg-cyan-500/10 px-3 py-2 text-sm text-cyan-100">
+        <Alert severity="success" sx={{ mb: 2 }}>
           {notice}
-        </p>
+        </Alert>
       ) : null}
 
       {error ? (
-        <p className="mb-4 rounded-xl border border-red-500/45 bg-red-500/12 px-3 py-2 text-sm text-red-100">
+        <Alert severity="error" sx={{ mb: 2 }}>
           {error}
-        </p>
+        </Alert>
       ) : null}
 
-      <div className="grid gap-6 xl:grid-cols-[320px_1fr]">
-        <aside className="rounded-2xl border border-emerald-400/20 bg-panel/80 p-4">
-          <h2 className="text-lg font-black uppercase text-ink">Forms</h2>
-          <p className="mt-1 text-xs text-slate-400">Open a form to edit.</p>
+      <Grid container spacing={2}>
+        <Grid size={{ xs: 12, xl: 3 }}>
+          <Paper sx={{ p: 2 }}>
+            <Typography variant="h6" color="primary.main">
+              Forms
+            </Typography>
+            <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+              Open a form to edit.
+            </Typography>
 
-          <div className="mt-4 space-y-2">
-            {loadingForms ? (
-              <div className="h-24 animate-pulse rounded-xl border border-emerald-400/20 bg-slate-900/50" />
-            ) : null}
+            <Stack spacing={1.5} sx={{ mt: 2 }}>
+              {loadingForms ? (
+                <Skeleton
+                  variant="rectangular"
+                  height={96}
+                  sx={{ borderRadius: 0 }}
+                />
+              ) : null}
 
-            {!loadingForms && forms.length === 0 ? (
-              <p className="rounded-xl border border-emerald-400/15 bg-slate-900/45 px-3 py-2 text-xs text-slate-400">
-                No forms yet. Create your first form.
-              </p>
-            ) : null}
+              {!loadingForms && forms.length === 0 ? (
+                <Typography variant="body2" color="text.secondary">
+                  No forms yet. Create your first form.
+                </Typography>
+              ) : null}
 
-            {!loadingForms
-              ? forms.map((form) => {
-                  const isActive =
-                    String(activeFormId || "") === String(form.id || "");
+              {!loadingForms
+                ? forms.map((form) => {
+                    const isActive =
+                      String(activeFormId || "") === String(form.id || "");
 
-                  return (
-                    <button
-                      key={form.id}
-                      type="button"
-                      onClick={() => selectForm(form)}
-                      className={`interactive-chip w-full rounded-xl border px-3 py-2 text-left ${
-                        isActive
-                          ? "is-active border-amber-300/70 bg-amber-500/15"
-                          : "border-emerald-400/20 bg-slate-900/45"
-                      }`}
-                    >
-                      <p className="text-sm font-bold text-ink">{form.title}</p>
-                      <p
-                        className={`mt-1 truncate text-xs ${
-                          isActive ? "text-amber-100/85" : "text-slate-400"
-                        }`}
+                    return (
+                      <Button
+                        key={form.id}
+                        type="button"
+                        onClick={() => selectForm(form)}
+                        variant={isActive ? "contained" : "outlined"}
+                        color={isActive ? "secondary" : "primary"}
+                        fullWidth
+                        sx={{
+                          justifyContent: "flex-start",
+                          textAlign: "left",
+                          p: 1.5,
+                        }}
                       >
-                        {form.id}
-                      </p>
-                    </button>
-                  );
-                })
-              : null}
-          </div>
-        </aside>
+                        <Box>
+                          <Typography variant="subtitle2">
+                            {form.title}
+                          </Typography>
+                          <Typography variant="caption" sx={{ opacity: 0.9 }}>
+                            {form.id}
+                          </Typography>
+                        </Box>
+                      </Button>
+                    );
+                  })
+                : null}
+            </Stack>
+          </Paper>
+        </Grid>
 
-        <section className="rounded-2xl border border-emerald-400/20 bg-panel/80 p-4 sm:p-5">
-          <h2 className="text-lg font-black uppercase text-ink">
-            Form Configuration
-          </h2>
+        <Grid size={{ xs: 12, xl: 9 }}>
+          <Paper sx={{ p: { xs: 2, sm: 3 } }}>
+            <Typography variant="h6" color="primary.main">
+              Form Configuration
+            </Typography>
 
-          <div className="mt-4 grid gap-3 sm:grid-cols-2">
-            <label className="block">
-              <span className="mb-1 block text-xs uppercase tracking-wider text-slate-400">
-                Form ID
-              </span>
-              <input
-                value={draft.id}
-                onChange={(event) =>
-                  updateDraft({ id: slugify(event.target.value) })
-                }
-                className="w-full rounded-lg border border-emerald-400/20 bg-slate-900/65 px-3 py-2 text-sm text-ink outline-none transition focus:border-amber-300"
-              />
-            </label>
+            <Grid container spacing={1.5} sx={{ mt: 1 }}>
+              <Grid size={{ xs: 12, md: 6 }}>
+                <TextField
+                  value={draft.id}
+                  onChange={(event) =>
+                    updateDraft({ id: slugify(event.target.value) })
+                  }
+                  label="Form ID"
+                  fullWidth
+                  size="small"
+                />
+              </Grid>
 
-            <label className="block">
-              <span className="mb-1 block text-xs uppercase tracking-wider text-slate-400">
-                Title
-              </span>
-              <input
-                value={draft.title}
-                onChange={(event) => updateDraft({ title: event.target.value })}
-                className="w-full rounded-lg border border-emerald-400/20 bg-slate-900/65 px-3 py-2 text-sm text-ink outline-none transition focus:border-amber-300"
-              />
-            </label>
+              <Grid size={{ xs: 12, md: 6 }}>
+                <TextField
+                  value={draft.title}
+                  onChange={(event) =>
+                    updateDraft({ title: event.target.value })
+                  }
+                  label="Title"
+                  fullWidth
+                  size="small"
+                />
+              </Grid>
 
-            <label className="block sm:col-span-2">
-              <span className="mb-1 block text-xs uppercase tracking-wider text-slate-400">
-                Description
-              </span>
-              <input
-                value={draft.description}
-                onChange={(event) =>
-                  updateDraft({ description: event.target.value })
-                }
-                className="w-full rounded-lg border border-emerald-400/20 bg-slate-900/65 px-3 py-2 text-sm text-ink outline-none transition focus:border-amber-300"
-              />
-            </label>
+              <Grid size={12}>
+                <TextField
+                  value={draft.description}
+                  onChange={(event) =>
+                    updateDraft({ description: event.target.value })
+                  }
+                  label="Description"
+                  fullWidth
+                  size="small"
+                />
+              </Grid>
 
-            <label className="block sm:col-span-2">
-              <span className="mb-1 block text-xs uppercase tracking-wider text-slate-400">
-                Submit Label
-              </span>
-              <input
-                value={draft.submitLabel}
-                onChange={(event) =>
-                  updateDraft({ submitLabel: event.target.value })
-                }
-                className="w-full rounded-lg border border-emerald-400/20 bg-slate-900/65 px-3 py-2 text-sm text-ink outline-none transition focus:border-amber-300"
-              />
-            </label>
+              <Grid size={12}>
+                <TextField
+                  value={draft.submitLabel}
+                  onChange={(event) =>
+                    updateDraft({ submitLabel: event.target.value })
+                  }
+                  label="Submit Label"
+                  fullWidth
+                  size="small"
+                />
+              </Grid>
 
-            <label className="block sm:col-span-2">
-              <span className="mb-1 block text-xs uppercase tracking-wider text-slate-400">
-                Form Purpose
-              </span>
-              <select
-                value={draft.formPurpose || "REGISTRATION"}
-                onChange={(event) =>
-                  updateDraft({ formPurpose: event.target.value })
-                }
-                className="w-full rounded-lg border border-emerald-400/20 bg-slate-900/65 px-3 py-2 text-sm text-ink outline-none transition focus:border-amber-300"
-              >
-                {FORM_PURPOSE_OPTIONS.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </select>
-            </label>
-          </div>
+              <Grid size={12}>
+                <TextField
+                  select
+                  value={draft.formPurpose || "REGISTRATION"}
+                  onChange={(event) =>
+                    updateDraft({ formPurpose: event.target.value })
+                  }
+                  label="Form Purpose"
+                  fullWidth
+                  size="small"
+                >
+                  {FORM_PURPOSE_OPTIONS.map((option) => (
+                    <MenuItem key={option.value} value={option.value}>
+                      {option.label}
+                    </MenuItem>
+                  ))}
+                </TextField>
+              </Grid>
+            </Grid>
 
-          <div className="mt-4 space-y-3">
-            {draft.fields.map((field, fieldIndex) => (
-              <div
-                key={`${field.name}-${fieldIndex}`}
-                className="rounded-xl border border-emerald-400/20 bg-slate-950/55 p-3"
-              >
-                <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
-                  <input
-                    placeholder="field_name"
-                    value={field.name}
-                    onChange={(event) =>
-                      patchField(fieldIndex, {
-                        name: slugify(event.target.value),
-                      })
-                    }
-                    className="rounded border border-emerald-400/20 bg-slate-900 px-2 py-1.5 text-xs text-slate-100"
-                  />
-                  <input
-                    placeholder="Field label"
-                    value={field.label}
-                    onChange={(event) =>
-                      patchField(fieldIndex, { label: event.target.value })
-                    }
-                    className="rounded border border-emerald-400/20 bg-slate-900 px-2 py-1.5 text-xs text-slate-100"
-                  />
-                  <select
-                    value={field.type}
-                    onChange={(event) =>
-                      patchField(fieldIndex, {
-                        type: event.target.value,
-                        options:
-                          event.target.value === "dropdown" ||
-                          event.target.value === "selector"
-                            ? field.options || []
-                            : [],
-                      })
-                    }
-                    className="rounded border border-emerald-400/20 bg-slate-900 px-2 py-1.5 text-xs text-slate-100"
-                  >
-                    {FIELD_TYPES.map((type) => (
-                      <option key={type} value={type}>
-                        {type}
-                      </option>
-                    ))}
-                  </select>
-                  <input
-                    placeholder="Placeholder"
-                    value={field.placeholder}
-                    onChange={(event) =>
-                      patchField(fieldIndex, {
-                        placeholder: event.target.value,
-                      })
-                    }
-                    className="rounded border border-emerald-400/20 bg-slate-900 px-2 py-1.5 text-xs text-slate-100 sm:col-span-2"
-                  />
-                  <label className="inline-flex items-center gap-2 rounded border border-emerald-400/20 bg-slate-900 px-2 py-1.5 text-xs text-slate-200">
-                    <input
-                      type="checkbox"
-                      checked={field.required}
-                      onChange={(event) =>
-                        patchField(fieldIndex, {
-                          required: event.target.checked,
-                        })
-                      }
-                    />
-                    Required
-                  </label>
-                </div>
+            <Stack spacing={1.5} sx={{ mt: 2 }}>
+              {draft.fields.map((field, fieldIndex) => (
+                <Paper
+                  key={`${field.name}-${fieldIndex}`}
+                  variant="outlined"
+                  sx={{ p: 1.5 }}
+                >
+                  <Grid container spacing={1.25}>
+                    <Grid size={{ xs: 12, md: 6, lg: 4 }}>
+                      <TextField
+                        label="Field Name"
+                        value={field.name}
+                        onChange={(event) =>
+                          patchField(fieldIndex, {
+                            name: slugify(event.target.value),
+                          })
+                        }
+                        fullWidth
+                        size="small"
+                      />
+                    </Grid>
 
-                {field.type === "dropdown" || field.type === "selector" ? (
-                  <div className="mt-2">
-                    <label className="mb-1 block text-[11px] uppercase tracking-wider text-slate-400">
-                      Options (one per line)
-                    </label>
-                    <textarea
+                    <Grid size={{ xs: 12, md: 6, lg: 4 }}>
+                      <TextField
+                        label="Field Label"
+                        value={field.label}
+                        onChange={(event) =>
+                          patchField(fieldIndex, { label: event.target.value })
+                        }
+                        fullWidth
+                        size="small"
+                      />
+                    </Grid>
+
+                    <Grid size={{ xs: 12, md: 6, lg: 4 }}>
+                      <TextField
+                        select
+                        label="Type"
+                        value={field.type}
+                        onChange={(event) =>
+                          patchField(fieldIndex, {
+                            type: event.target.value,
+                            options:
+                              event.target.value === "dropdown" ||
+                              event.target.value === "selector"
+                                ? field.options || []
+                                : [],
+                          })
+                        }
+                        fullWidth
+                        size="small"
+                      >
+                        {FIELD_TYPES.map((type) => (
+                          <MenuItem key={type} value={type}>
+                            {type}
+                          </MenuItem>
+                        ))}
+                      </TextField>
+                    </Grid>
+
+                    <Grid size={{ xs: 12, md: 8 }}>
+                      <TextField
+                        label="Placeholder"
+                        value={field.placeholder}
+                        onChange={(event) =>
+                          patchField(fieldIndex, {
+                            placeholder: event.target.value,
+                          })
+                        }
+                        fullWidth
+                        size="small"
+                      />
+                    </Grid>
+
+                    <Grid size={{ xs: 12, md: 4 }}>
+                      <Stack
+                        direction="row"
+                        spacing={0.5}
+                        alignItems="center"
+                        sx={{ height: "100%", pl: 1 }}
+                      >
+                        <Switch
+                          checked={field.required}
+                          onChange={(event) =>
+                            patchField(fieldIndex, {
+                              required: event.target.checked,
+                            })
+                          }
+                        />
+                        <Typography variant="body2">Required</Typography>
+                      </Stack>
+                    </Grid>
+                  </Grid>
+
+                  {field.type === "dropdown" || field.type === "selector" ? (
+                    <TextField
+                      label="Options (one per line)"
+                      multiline
                       rows={4}
                       value={optionsToText(field.options)}
                       onChange={(event) =>
@@ -576,49 +631,66 @@ const FormBuilderPage = () => {
                           options: event.target.value.split("\n"),
                         })
                       }
-                      className="w-full rounded border border-emerald-400/20 bg-slate-900 px-2 py-1.5 text-xs text-slate-100"
+                      fullWidth
+                      size="small"
+                      sx={{ mt: 1.25 }}
                     />
-                  </div>
-                ) : null}
+                  ) : null}
 
-                <div className="mt-2 flex flex-wrap gap-2">
-                  <button
-                    type="button"
-                    onClick={() => moveField(fieldIndex, -1)}
-                    disabled={fieldIndex === 0}
-                    className="rounded border border-emerald-400/20 bg-slate-900 px-2 py-1 text-[11px] font-semibold uppercase tracking-wider text-slate-300 disabled:opacity-45"
+                  <Stack
+                    direction="row"
+                    spacing={1}
+                    useFlexGap
+                    flexWrap="wrap"
+                    sx={{ mt: 1.25 }}
                   >
-                    Move Up
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => moveField(fieldIndex, 1)}
-                    disabled={fieldIndex === draft.fields.length - 1}
-                    className="rounded border border-emerald-400/20 bg-slate-900 px-2 py-1 text-[11px] font-semibold uppercase tracking-wider text-slate-300 disabled:opacity-45"
-                  >
-                    Move Down
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => removeField(fieldIndex)}
-                    className="rounded border border-red-500/40 bg-red-500/10 px-2 py-1 text-[11px] font-semibold uppercase tracking-wider text-red-200"
-                  >
-                    Remove Field
-                  </button>
-                </div>
-              </div>
-            ))}
+                    <Button
+                      type="button"
+                      onClick={() => moveField(fieldIndex, -1)}
+                      disabled={fieldIndex === 0}
+                      variant="outlined"
+                      size="small"
+                      startIcon={<ArrowUp size={14} />}
+                    >
+                      Move Up
+                    </Button>
+                    <Button
+                      type="button"
+                      onClick={() => moveField(fieldIndex, 1)}
+                      disabled={fieldIndex === draft.fields.length - 1}
+                      variant="outlined"
+                      size="small"
+                      startIcon={<ArrowDown size={14} />}
+                    >
+                      Move Down
+                    </Button>
+                    <Button
+                      type="button"
+                      onClick={() => removeField(fieldIndex)}
+                      color="error"
+                      variant="outlined"
+                      size="small"
+                      startIcon={<Trash2 size={14} />}
+                    >
+                      Remove Field
+                    </Button>
+                  </Stack>
+                </Paper>
+              ))}
 
-            <button
-              type="button"
-              onClick={addField}
-              className="rounded border border-emerald-400/20 bg-slate-900 px-2.5 py-1.5 text-[11px] font-semibold uppercase tracking-wider text-slate-300"
-            >
-              + Add Field
-            </button>
-          </div>
-        </section>
-      </div>
+              <Button
+                type="button"
+                onClick={addField}
+                variant="outlined"
+                startIcon={<Plus size={16} />}
+                sx={{ alignSelf: "flex-start" }}
+              >
+                Add Field
+              </Button>
+            </Stack>
+          </Paper>
+        </Grid>
+      </Grid>
     </AdminShell>
   );
 };
