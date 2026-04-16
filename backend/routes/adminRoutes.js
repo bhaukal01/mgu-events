@@ -240,6 +240,7 @@ const normalizeEventPayload = (payload = {}) => ({
     slug: normalizeSlug(payload.slug || payload.title),
     status: eventStatuses.has(payload.status) ? payload.status : "DRAFT",
     serverLogoUrl: normalizeText(payload.serverLogoUrl, 1200),
+    cardStrapline: normalizeText(payload.cardStrapline, 480),
     manualEventPublish: Boolean(payload.manualEventPublish),
     manualWinnerPublish: Boolean(payload.manualWinnerPublish),
     winnerAnnouncement: normalizeText(payload.winnerAnnouncement, 3000),
